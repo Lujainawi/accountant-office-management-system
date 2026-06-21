@@ -13,7 +13,7 @@ export const navItems = [
 export const pages = {
   login: {
     title: "כניסה למערכת",
-    description: "מסך הכניסה יופעל בשלב מאוחר יותר.",
+    description: "הזינו את פרטי ההתחברות שלכם כדי לגשת למערכת הפנימית.",
   },
   dashboard: {
     title: "לוח בקרה",
@@ -77,4 +77,13 @@ export const ui = {
   loading: "טוען...",
   error: "אירעה שגיאה",
   backToDashboard: "חזרה ללוח הבקרה",
+};
+
+export const auth = {
+  emailLabel: "אימייל",
+  passwordLabel: "סיסמה",
+  loginButton: "כניסה",
+  logoutButton: "יציאה",
+  invalidLogin: "אימייל או סיסמה שגויים.",
+  unexpectedError: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
 };

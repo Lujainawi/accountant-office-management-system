@@ -36,13 +36,16 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    from app.models.office_settings import OfficeSettings  # noqa: F401
     from app.crud.office_settings import seed_office_settings_if_missing
+    from app.crud.user import seed_dev_admin_if_missing
+    from app.models.office_settings import OfficeSettings  # noqa: F401
+    from app.models.user import User  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
         seed_office_settings_if_missing(db)
+        seed_dev_admin_if_missing(db)
     finally:
         db.close()
