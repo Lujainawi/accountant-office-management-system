@@ -1,0 +1,27 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local data and uploads
+accountant_app.db
+*.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Node / frontend builds
+node_modules/
+dist/
+build/
+
+# Test / coverage artifacts
+coverage/
+htmlcov/
+.coverage
