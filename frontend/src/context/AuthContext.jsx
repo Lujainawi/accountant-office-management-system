@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { ApiError } from "../api/client";
+import { ApiError, clearUnauthorizedHandler, setUnauthorizedHandler } from "../api/client";
 import * as authApi from "../api/auth";
 
 const AuthContext = createContext(null);
@@ -7,6 +7,17 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const clearSession = useCallback(() => {
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(clearSession);
+    return () => {
+      clearUnauthorizedHandler();
+    };
+  }, [clearSession]);
 
   const bootstrap = useCallback(async () => {
     setIsLoading(true);
@@ -46,8 +57,9 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       login,
       logout,
+      clearSession,
     }),
-    [user, isLoading, login, logout],
+    [user, isLoading, login, logout, clearSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

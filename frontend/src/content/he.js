@@ -21,19 +21,19 @@ export const pages = {
   },
   clients: {
     title: "לקוחות",
-    description: "ניהול לקוחות יתווסף בשלב מאוחר יותר.",
+    description: "ניהול לקוחות המשרד, חיפוש, סינון ועריכה.",
   },
   addClient: {
     title: "הוספת לקוח",
-    description: "טופס הוספת לקוח יתווסף בשלב מאוחר יותר.",
+    description: "הזינו את פרטי הלקוח החדש.",
   },
   editClient: {
     title: "עריכת לקוח",
-    description: "טופס עריכת לקוח יתווסף בשלב מאוחר יותר.",
+    description: "עדכנו את פרטי הלקוח. ניתן לנקות שדות אופציונליים על ידי השארתם ריקים.",
   },
   clientDetails: {
     title: "פרטי לקוח",
-    description: "פרטי הלקוח יוצגו לאחר חיבור למערכת.",
+    description: "צפייה בפרטי הלקוח ופעולות ניהול.",
   },
   documents: {
     title: "מסמכים",
@@ -77,6 +77,11 @@ export const ui = {
   loading: "טוען...",
   error: "אירעה שגיאה",
   backToDashboard: "חזרה ללוח הבקרה",
+  view: "צפייה",
+  edit: "עריכה",
+  notAvailable: "—",
+  all: "הכל",
+  resetFilters: "איפוס סינון",
 };
 
 export const auth = {
@@ -86,4 +91,81 @@ export const auth = {
   logoutButton: "יציאה",
   invalidLogin: "אימייל או סיסמה שגויים.",
   unexpectedError: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
+};
+
+export const clients = {
+  fields: {
+    clientName: "שם הלקוח",
+    businessName: "שם העסק",
+    clientType: "סוג לקוח",
+    status: "סטטוס",
+    phone: "טלפון",
+    email: "אימייל",
+    businessId: "מספר עוסק / ח.פ.",
+    address: "כתובת",
+    notes: "הערות פנימיות",
+    notesHint: "הערות אלו מיועדות לשימוש פנימי במשרד בלבד.",
+    updatedAt: "עודכן לאחרונה",
+    contact: "יצירת קשר",
+  },
+  actions: {
+    addClient: "הוספת לקוח",
+    backToList: "חזרה לרשימת לקוחות",
+    cancel: "ביטול",
+    saveClient: "שמירת לקוח",
+    saveChanges: "שמירת שינויים",
+    editClient: "עריכת לקוח",
+    archiveClient: "ארכוב לקוח",
+    deleteClient: "מחיקה לצמיתות",
+    viewDetails: "פרטי לקוח",
+  },
+  list: {
+    searchLabel: "חיפוש לקוחות",
+    searchPlaceholder: "שם, עסק, טלפון, אימייל או מספר עוסק",
+    statusFilter: "סטטוס",
+    typeFilter: "סוג לקוח",
+    emptyTitle: "אין לקוחות עדיין",
+    emptyDescription: "הוסיפו את הלקוח הראשון כדי להתחיל לנהל את פרטי המשרד.",
+    noResultsTitle: "לא נמצאו לקוחות",
+    noResultsDescription: "נסו לשנות את החיפוש או את מסנני הסטטוס והסוג.",
+    columns: {
+      name: "שם",
+      business: "עסק",
+      contact: "יצירת קשר",
+      type: "סוג",
+      status: "סטטוס",
+      updated: "עודכן",
+      actions: "פעולות",
+    },
+  },
+  details: {
+    sectionTitle: "פרטי לקוח",
+    internalNotesLabel: "הערות פנימיות",
+    noNotes: "אין הערות פנימיות.",
+    notFoundTitle: "הלקוח לא נמצא",
+    notFoundDescription: "ייתכן שהלקוח נמחק או שהמזהה אינו תקין.",
+  },
+  confirm: {
+    cancel: "ביטול",
+    archiveTitle: "ארכוב לקוח",
+    archiveDescription:
+      "הלקוח יסומן כלא פעיל ויישאר במערכת. ניתן להפעיל אותו מחדש בעריכה.",
+    archiveConfirm: "ארכוב",
+    deleteTitle: "מחיקה לצמיתות",
+    deleteDescription:
+      "פעולה זו תסיר את הלקוח לצמיתות מהמערכת. לא ניתן לשחזר את הרשומה.",
+    deleteConfirm: "מחק לצמיתות",
+  },
+  validation: {
+    clientNameRequired: "שם הלקוח הוא שדה חובה.",
+    noChanges: "לא בוצעו שינויים לשמירה.",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את רשימת הלקוחות.",
+    loadClientFailed: "לא ניתן לטעון את פרטי הלקוח.",
+    saveFailed: "לא ניתן לשמור את פרטי הלקוח.",
+    archiveFailed: "לא ניתן לארכב את הלקוח.",
+    deleteFailed: "לא ניתן למחוק את הלקוח.",
+    unexpected: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
+  },
 };

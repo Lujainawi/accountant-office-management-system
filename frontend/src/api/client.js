@@ -9,6 +9,16 @@ export class ApiError extends Error {
   }
 }
 
+let onUnauthorized = null;
+
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler;
+}
+
+export function clearUnauthorizedHandler() {
+  onUnauthorized = null;
+}
+
 function extractErrorMessage(payload) {
   if (!payload || typeof payload !== "object") {
     return null;
@@ -38,7 +48,7 @@ function extractErrorMessage(payload) {
 }
 
 export async function apiFetch(path, options = {}) {
-  const { body, headers = {}, ...rest } = options;
+  const { body, headers = {}, skipUnauthorizedHandler = false, ...rest } = options;
   const requestHeaders = { ...headers };
 
   if (body !== undefined) {
@@ -61,6 +71,9 @@ export async function apiFetch(path, options = {}) {
   const payload = hasJsonBody ? await response.json() : null;
 
   if (!response.ok) {
+    if (response.status === 401 && !skipUnauthorizedHandler && onUnauthorized) {
+      onUnauthorized();
+    }
     const message =
       extractErrorMessage(payload) ?? "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.";
     throw new ApiError(response.status, message);

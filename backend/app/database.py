@@ -38,6 +38,7 @@ def get_db() -> Generator[Session, None, None]:
 def init_db() -> None:
     from app.crud.office_settings import seed_office_settings_if_missing
     from app.crud.user import seed_dev_admin_if_missing
+    from app.models.client import Client  # noqa: F401
     from app.models.office_settings import OfficeSettings  # noqa: F401
     from app.models.user import User  # noqa: F401
 
