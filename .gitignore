@@ -13,8 +13,8 @@ venv/
 # Local data and uploads
 accountant_app.db
 *.db
-backend/uploads/*
-!backend/uploads/.gitkeep
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep
 
 # Node / frontend builds
 node_modules/
