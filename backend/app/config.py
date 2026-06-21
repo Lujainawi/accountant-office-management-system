@@ -4,6 +4,7 @@ from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_UPLOAD_DIR = BACKEND_DIR / "uploads"
 PROJECT_ROOT = BACKEND_DIR.parent
 ENV_FILE = PROJECT_ROOT / ".env"
 
@@ -23,6 +24,8 @@ class Settings(BaseSettings):
     frontend_origin: str = "http://127.0.0.1:5173"
     cookie_secure: bool = False
     database_url: str = "sqlite:///./accountant_app.db"
+    max_upload_size_mb: int = 10
+    upload_dir: Path = DEFAULT_UPLOAD_DIR
     dev_admin_email: str = "admin@example.test"
     dev_admin_password: str = ""
 

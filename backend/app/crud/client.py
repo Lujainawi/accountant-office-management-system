@@ -1,12 +1,17 @@
 from datetime import datetime, timezone
 
+from fastapi import HTTPException, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.client import Client
+from app.models.document import Document
 from app.schemas.client import ClientCreate, ClientUpdate, client_to_response
 
 NOT_FOUND_MESSAGE = "הלקוח לא נמצא."
+CLIENT_HAS_DOCUMENTS_MESSAGE = (
+    "לא ניתן למחוק לקוח שיש לו מסמכים קשורים. יש למחוק את המסמכים הקשורים תחילה."
+)
 
 
 def _utc_now() -> datetime:
@@ -83,8 +88,12 @@ def update_client(db: Session, client: Client, update_data: ClientUpdate):
 
 
 def delete_client(db: Session, client: Client) -> None:
-    # TODO: When Documents, Tasks, and Payments are implemented, add dependency
-    # checks here and raise HTTP 409 if related records exist. Keep archive
-    # (status=inactive) as the recommended UI action when dependents exist.
+    document_count = db.query(Document).filter(Document.client_id == client.id).count()
+    if document_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=CLIENT_HAS_DOCUMENTS_MESSAGE,
+        )
+
     db.delete(client)
     db.commit()

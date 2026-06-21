@@ -7,14 +7,13 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.venv/
+.venv*/
 venv/
 
 # Local data and uploads
 accountant_app.db
 *.db
-backend/app/uploads/*
-!backend/app/uploads/.gitkeep
+backend/uploads/
 
 # Node / frontend builds
 node_modules/

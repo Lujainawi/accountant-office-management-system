@@ -9,6 +9,7 @@ import EditClientPage from "./pages/EditClientPage";
 import ClientDetailsPage from "./pages/ClientDetailsPage";
 import DocumentsPage from "./pages/DocumentsPage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
+import DocumentDetailsPage from "./pages/DocumentDetailsPage";
 import EditDocumentPage from "./pages/EditDocumentPage";
 import TasksPage from "./pages/TasksPage";
 import VatCalculatorPage from "./pages/VatCalculatorPage";
@@ -28,7 +29,8 @@ export default function App() {
           <Route path="clients/:id" element={<ClientDetailsPage />} />
           <Route path="clients/:id/edit" element={<EditClientPage />} />
           <Route path="documents" element={<DocumentsPage />} />
-          <Route path="documents/new" element={<UploadDocumentPage />} />
+          <Route path="documents/upload" element={<UploadDocumentPage />} />
+          <Route path="documents/:id" element={<DocumentDetailsPage />} />
           <Route path="documents/:id/edit" element={<EditDocumentPage />} />
           <Route path="tasks" element={<TasksPage />} />
           <Route path="vat-calculator" element={<VatCalculatorPage />} />
