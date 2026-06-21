@@ -16,6 +16,8 @@ from app.dependencies import get_current_user
 from app.models.client import CLIENT_STATUSES, CLIENT_TYPES
 from app.models.user import User
 from app.schemas.client import ClientCreate, ClientResponse, ClientUpdate, client_to_response
+from app.schemas.client_summary import ClientSummaryResponse
+from app.services.client_summary import get_client_summary
 
 router = APIRouter(tags=["clients"])
 
@@ -74,6 +76,19 @@ def get_client_by_id(
     _ = current_user
     client = _get_client_or_404(db, client_id)
     return client_to_response(client)
+
+
+@router.get("/clients/{client_id}/summary", response_model=ClientSummaryResponse)
+def get_client_summary_by_id(
+    client_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> ClientSummaryResponse:
+    _ = current_user
+    summary = get_client_summary(db, client_id)
+    if summary is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=NOT_FOUND_MESSAGE)
+    return summary
 
 
 @router.put("/clients/{client_id}", response_model=ClientResponse)

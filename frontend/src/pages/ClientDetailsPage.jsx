@@ -7,15 +7,19 @@ import DangerButton from "../components/DangerButton";
 import LoadingState from "../components/LoadingState";
 import ErrorMessage from "../components/ErrorMessage";
 import EmptyState from "../components/EmptyState";
-import StatusBadge from "../components/StatusBadge";
 import DateDisplay from "../components/DateDisplay";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { deleteClient, getClient, updateClient } from "../api/clients";
+import ClientWorkspaceHeader from "../components/clients/ClientWorkspaceHeader";
+import ClientWorkspaceSummary from "../components/clients/ClientWorkspaceSummary";
+import ClientDocumentsSection from "../components/clients/ClientDocumentsSection";
+import ClientTasksSection from "../components/clients/ClientTasksSection";
+import ClientPaymentsSection from "../components/clients/ClientPaymentsSection";
+import ClientNotesPanel from "../components/clients/ClientNotesPanel";
+import { deleteClient, getClient, getClientSummary, updateClient } from "../api/clients";
 import { ApiError } from "../api/client";
 import { clients as clientsText, pages, ui } from "../content/he";
 import {
   getClientStatusLabel,
-  getClientStatusTone,
   getClientTypeLabel,
 } from "../utils/clientForm";
 import { getClientErrorMessage } from "../utils/clientErrors";
@@ -36,21 +40,44 @@ export default function ClientDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [summaryError, setSummaryError] = useState("");
   const [notFound, setNotFound] = useState(false);
   const [actionError, setActionError] = useState("");
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  async function loadClient() {
+  async function loadPage() {
     setIsLoading(true);
     setErrorMessage("");
+    setSummaryError("");
     setNotFound(false);
+    setSummary(null);
 
     try {
-      const data = await getClient(id);
-      setClient(data);
+      const clientData = await getClient(id);
+      setClient(clientData);
+
+      try {
+        const summaryData = await getClientSummary(id);
+        setSummary(summaryData);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          setNotFound(true);
+          setClient(null);
+          return;
+        }
+
+        const message = getClientErrorMessage(
+          error,
+          clientsText.errors.loadSummaryFailed,
+        );
+        if (message) {
+          setSummaryError(message);
+        }
+      }
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
         setNotFound(true);
@@ -67,7 +94,7 @@ export default function ClientDetailsPage() {
   }
 
   useEffect(() => {
-    loadClient();
+    loadPage();
   }, [id]);
 
   async function handleArchiveConfirm() {
@@ -97,6 +124,17 @@ export default function ClientDetailsPage() {
       if (message) {
         setActionError(message);
       }
+    }
+  }
+
+  async function handleSaveNotes(notes) {
+    try {
+      const updated = await updateClient(id, { notes: notes.trim() || null });
+      setClient(updated);
+      return updated;
+    } catch (error) {
+      const message = getClientErrorMessage(error, clientsText.workspace.notes.saveFailed);
+      throw new Error(message || clientsText.workspace.notes.saveFailed);
     }
   }
 
@@ -132,13 +170,7 @@ export default function ClientDetailsPage() {
         description={pages.clientDetails.description}
       />
 
-      <div className="client-details__header">
-        <StatusBadge
-          label={getClientStatusLabel(client.status)}
-          tone={getClientStatusTone(client.status)}
-        />
-        <span className="client-details__type">{getClientTypeLabel(client.client_type)}</span>
-      </div>
+      <ClientWorkspaceHeader client={client} />
 
       <div className="page-actions client-details__actions">
         <PrimaryButton type="button" onClick={() => navigate(`/clients/${client.id}/edit`)}>
@@ -159,31 +191,51 @@ export default function ClientDetailsPage() {
 
       {actionError ? <ErrorMessage message={actionError} /> : null}
 
-      <section className="client-details__section" aria-labelledby="client-details-title">
-        <h2 id="client-details-title" className="client-details__section-title">
-          {clientsText.details.sectionTitle}
-        </h2>
-        <dl className="client-details__grid">
-          <DetailField label={clientsText.fields.clientName} value={client.client_name} />
-          <DetailField label={clientsText.fields.businessName} value={client.business_name} />
-          <DetailField label={clientsText.fields.clientType} value={getClientTypeLabel(client.client_type)} />
-          <DetailField label={clientsText.fields.status} value={getClientStatusLabel(client.status)} />
-          <DetailField label={clientsText.fields.phone} value={client.phone} />
-          <DetailField label={clientsText.fields.email} value={client.email} />
-          <DetailField label={clientsText.fields.businessId} value={client.business_id} />
-          <DetailField label={clientsText.fields.address} value={client.address} />
-          <DetailField label={clientsText.fields.updatedAt} value={<DateDisplay value={client.updated_at} />} />
-        </dl>
-      </section>
+      {summaryError ? <ErrorMessage message={summaryError} /> : null}
 
-      <section className="client-details__section" aria-labelledby="client-notes-title">
-        <h2 id="client-notes-title" className="client-details__section-title">
-          {clientsText.details.internalNotesLabel}
-        </h2>
-        <p className="client-details__notes">
-          {client.notes || clientsText.details.noNotes}
-        </p>
-      </section>
+      {summary ? <ClientWorkspaceSummary summary={summary} /> : null}
+
+      <div className="client-workspace__layout">
+        <div className="client-workspace__main">
+          <ClientDocumentsSection />
+          <ClientTasksSection />
+          <ClientPaymentsSection />
+        </div>
+
+        <aside className="client-workspace__aside">
+          <section className="client-workspace__section" aria-labelledby="client-details-title">
+            <h2 id="client-details-title" className="client-workspace__section-title">
+              {clientsText.details.sectionTitle}
+            </h2>
+            <dl className="client-details__grid">
+              <DetailField label={clientsText.fields.clientName} value={client.client_name} />
+              <DetailField label={clientsText.fields.businessName} value={client.business_name} />
+              <DetailField
+                label={clientsText.fields.clientType}
+                value={getClientTypeLabel(client.client_type)}
+              />
+              <DetailField
+                label={clientsText.fields.status}
+                value={getClientStatusLabel(client.status)}
+              />
+              <DetailField label={clientsText.fields.phone} value={client.phone} />
+              <DetailField label={clientsText.fields.email} value={client.email} />
+              <DetailField label={clientsText.fields.businessId} value={client.business_id} />
+              <DetailField label={clientsText.fields.address} value={client.address} />
+              <DetailField
+                label={clientsText.fields.updatedAt}
+                value={<DateDisplay value={client.updated_at} />}
+              />
+            </dl>
+          </section>
+
+          <ClientNotesPanel
+            clientId={client.id}
+            initialNotes={client.notes}
+            onSaved={handleSaveNotes}
+          />
+        </aside>
+      </div>
 
       <ConfirmDialog
         isOpen={showArchiveDialog}

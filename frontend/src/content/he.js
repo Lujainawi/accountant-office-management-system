@@ -82,6 +82,9 @@ export const ui = {
   notAvailable: "—",
   all: "הכל",
   resetFilters: "איפוס סינון",
+  contactPhone: "טלפון",
+  contactEmail: "אימייל",
+  contactBusinessId: "מספר עוסק / ח.פ.",
 };
 
 export const auth = {
@@ -163,9 +166,47 @@ export const clients = {
   errors: {
     loadFailed: "לא ניתן לטעון את רשימת הלקוחות.",
     loadClientFailed: "לא ניתן לטעון את פרטי הלקוח.",
+    loadSummaryFailed: "לא ניתן לטעון את סיכום הלקוח.",
     saveFailed: "לא ניתן לשמור את פרטי הלקוח.",
     archiveFailed: "לא ניתן לארכב את הלקוח.",
     deleteFailed: "לא ניתן למחוק את הלקוח.",
     unexpected: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
+  },
+  workspace: {
+    summary: {
+      documents: "מסמכים",
+      openTasks: "משימות פתוחות",
+      totalBeforeVat: "סה״כ לפני מע״מ",
+      vatTotal: "סה״כ מע״מ",
+      totalIncludingVat: "סה״כ כולל מע״מ",
+      paymentRecords: "רשומות תשלום",
+      documentStatusTitle: "סטטוס מסמכים",
+      statusNew: "חדש",
+      statusInProgress: "בטיפול",
+      statusCompleted: "הושלם",
+      statusMissingInfo: "חסר מידע",
+    },
+    sections: {
+      documents: "מסמכים",
+      tasks: "משימות",
+      payments: "תשלומים",
+    },
+    documents: {
+      disabledAction: "הוספת מסמך תתאפשר בהמשך",
+      explanation: "עדיין אין מסמכים ללקוח זה. העלאת מסמכים תהיה זמינה בהמשך.",
+    },
+    tasks: {
+      disabledAction: "ניהול משימות יתווסף בהמשך",
+      explanation: "עדיין אין משימות ללקוח זה. ניהול משימות יתווסף בהמשך.",
+    },
+    payments: {
+      disabledAction: "מעקב תשלומים יתווסף בהמשך",
+      explanation: "עדיין אין רשומות תשלום ללקוח זה. מעקב תשלומים יתווסף בהמשך.",
+    },
+    notes: {
+      saveNotes: "שמירת הערות",
+      saveSuccess: "הערות נשמרו בהצלחה.",
+      saveFailed: "לא ניתן לשמור את ההערות.",
+    },
   },
 };

@@ -25,6 +25,10 @@ export function getClient(id) {
   return apiFetch(`/api/clients/${id}`);
 }
 
+export function getClientSummary(id) {
+  return apiFetch(`/api/clients/${id}/summary`);
+}
+
 export function createClient(payload) {
   return apiFetch("/api/clients", {
     method: "POST",
