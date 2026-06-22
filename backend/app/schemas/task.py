@@ -26,10 +26,16 @@ def normalize_optional_text(value: str | None) -> str | None:
     return trimmed if trimmed else None
 
 
-def compute_is_overdue(due_date: date | None, status: str) -> bool:
+def compute_is_overdue(
+    due_date: date | None,
+    status: str,
+    *,
+    today: date | None = None,
+) -> bool:
     if due_date is None or status == "done":
         return False
-    return due_date < date.today()
+    resolved_today = today if today is not None else date.today()
+    return due_date < resolved_today
 
 
 class TaskCreate(BaseModel):

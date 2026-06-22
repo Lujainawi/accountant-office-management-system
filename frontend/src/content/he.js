@@ -17,7 +17,7 @@ export const pages = {
   },
   dashboard: {
     title: "לוח בקרה",
-    description: "סיכומי נתונים יוצגו לאחר חיבור למערכת.",
+    description: "סקירת נתוני המשרד מהמערכת.",
   },
   clients: {
     title: "לקוחות",
@@ -389,4 +389,60 @@ export const tasks = {
     in_progress: "בטיפול",
     done: "הושלם",
   },
+};
+
+export const dashboard = {
+  welcomeTemplate: "ברוכים הבאים ל{officeName}",
+  metrics: {
+    totalClients: "סה״כ לקוחות",
+    activeClients: "לקוחות פעילים",
+    totalDocuments: "סה״כ מסמכים",
+    openTasks: "משימות פתוחות",
+    urgentTasks: "משימות דחופות",
+    totalBeforeVat: "סה״כ לפני מע״מ",
+    vatTotal: "סה״כ מע״מ",
+    totalIncludingVat: "סה״כ כולל מע״מ",
+    documentStatusTitle: "סטטוס מסמכים",
+    statusNew: "חדש",
+    statusInProgress: "בטיפול",
+    statusCompleted: "הושלם",
+    statusMissingInfo: "חסר מידע",
+  },
+  sections: {
+    clients: "לקוחות",
+    documents: "מסמכים",
+    tasks: "משימות",
+  },
+  financialSectionTemplate: "סיכום כספי — {monthLabel}",
+  attention: {
+    title: "דורש טיפול",
+    urgentTasksTitle: "משימות דחופות",
+    missingDocumentsTitle: "מסמכים עם חסר מידע",
+    noUrgentTasks: "אין משימות דחופות כרגע.",
+    noMissingDocuments: "אין מסמכים עם חסר מידע כרגע.",
+  },
+  emptyOffice: {
+    title: "עדיין אין נתוני משרד",
+    description:
+      "לא נוספו עדיין לקוחות, מסמכים או משימות למערכת. התחילו בהוספת לקוח ראשון כדי לנהל את עבודת המשרד.",
+    actionLabel: "הוספת לקוח ראשון",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את לוח הבקרה.",
+    retry: "נסו שוב",
+  },
+  hebrewMonths: [
+    "ינואר",
+    "פברואר",
+    "מרץ",
+    "אפריל",
+    "מאי",
+    "יוני",
+    "יולי",
+    "אוגוסט",
+    "ספטמבר",
+    "אוקטובר",
+    "נובמבר",
+    "דצמבר",
+  ],
 };
