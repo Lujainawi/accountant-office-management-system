@@ -76,6 +76,12 @@
   background: var(--color-warning-bg);
 }
 
+.status-badge--danger {
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+}
+
 .empty-state,
 .error-message,
 .loading-state {
@@ -805,6 +811,69 @@
 .client-documents-list__date {
   color: var(--color-text-muted);
   font-size: 0.875rem;
+}
+
+.client-tasks-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.client-tasks-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.client-tasks-list__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.client-tasks-list__link {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.client-tasks-list__date {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.client-tasks-list__badges,
+.task-indicators,
+.task-row__title-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.task-row__title-cell {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tasks-toolbar {
+  display: flex;
+  justify-content: flex-start;
+  margin-block-end: var(--space-4);
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 40rem;
 }
 
 .client-workspace__section-actions {

@@ -25,6 +25,9 @@ NOT_FOUND_MESSAGE = "המסמך לא נמצא."
 INVALID_CLIENT_MESSAGE = "הלקוח לא נמצא."
 SAVE_FAILED_MESSAGE = "לא ניתן לשמור את המסמך."
 DELETE_FAILED_MESSAGE = "לא ניתן למחוק את המסמך."
+DOCUMENT_HAS_TASKS_MESSAGE = (
+    "לא ניתן למחוק מסמך שקשור למשימות. יש לעדכן או למחוק את המשימות הקשורות תחילה."
+)
 
 
 def _utc_now() -> datetime:
@@ -202,6 +205,12 @@ def update_document(
 
 
 def delete_document(db: Session, document: Document) -> None:
+    from app.crud.task import count_tasks_for_document
+
+    linked_task_count = count_tasks_for_document(db, document.id)
+    if linked_task_count > 0:
+        raise ValueError(DOCUMENT_HAS_TASKS_MESSAGE)
+
     relative_key = document.file_path
 
     try:

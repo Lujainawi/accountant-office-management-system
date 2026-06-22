@@ -41,6 +41,7 @@ def init_db() -> None:
     from app.models.client import Client  # noqa: F401
     from app.models.document import Document  # noqa: F401
     from app.models.office_settings import OfficeSettings  # noqa: F401
+    from app.models.task import Task  # noqa: F401
     from app.models.user import User  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

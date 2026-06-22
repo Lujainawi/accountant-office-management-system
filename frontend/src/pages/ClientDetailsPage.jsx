@@ -198,7 +198,7 @@ export default function ClientDetailsPage() {
       <div className="client-workspace__layout">
         <div className="client-workspace__main">
           <ClientDocumentsSection clientId={client.id} />
-          <ClientTasksSection />
+          <ClientTasksSection clientId={client.id} />
           <ClientPaymentsSection />
         </div>
 

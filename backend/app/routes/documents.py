@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
 from app.crud.document import (
+    DOCUMENT_HAS_TASKS_MESSAGE,
     NOT_FOUND_MESSAGE,
     create_document,
     delete_document,
@@ -203,9 +204,15 @@ def remove_document(
     try:
         delete_document(db, document)
     except ValueError as exc:
+        message = str(exc)
+        if message == DOCUMENT_HAS_TASKS_MESSAGE:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=message,
+            ) from exc
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(exc),
+            detail=message,
         ) from exc
 
 

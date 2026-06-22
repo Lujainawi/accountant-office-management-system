@@ -85,6 +85,7 @@ def test_app(tmp_path, monkeypatch, dev_db_guard):
     from app.models.client import Client as ClientModel  # noqa: F401
     from app.models.document import Document as DocumentModel  # noqa: F401
     from app.models.office_settings import OfficeSettings as OfficeSettingsModel  # noqa: F401
+    from app.models.task import Task as TaskModel  # noqa: F401
     from app.models.user import User as UserModel  # noqa: F401
 
     Base.metadata.create_all(bind=test_engine)

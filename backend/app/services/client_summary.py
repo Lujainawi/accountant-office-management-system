@@ -4,6 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
+from app.crud.task import count_open_tasks_for_client
 from app.models.document import DOCUMENT_STATUSES, Document
 from app.schemas.client_summary import ClientSummaryResponse, DocumentsByStatus
 
@@ -45,6 +46,8 @@ def get_client_summary(db: Session, client_id: int) -> ClientSummaryResponse | N
     vat_total = Decimal(str(totals[1])).quantize(Decimal("0.01"))
     total_including_vat = Decimal(str(totals[2])).quantize(Decimal("0.01"))
 
+    open_task_count = count_open_tasks_for_client(db, client_id)
+
     return ClientSummaryResponse(
         client_id=client.id,
         document_count=document_count,
@@ -52,6 +55,6 @@ def get_client_summary(db: Session, client_id: int) -> ClientSummaryResponse | N
         total_before_vat=total_before_vat,
         vat_total=vat_total,
         total_including_vat=total_including_vat,
-        open_task_count=0,
+        open_task_count=open_task_count,
         payment_record_count=0,
     )

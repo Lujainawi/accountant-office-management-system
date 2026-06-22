@@ -53,7 +53,15 @@ export const pages = {
   },
   tasks: {
     title: "משימות",
-    description: "ניהול משימות יתווסף בשלב מאוחר יותר.",
+    description: "ניהול משימות המשרד, מעקב אחר עדיפויות ותאריכי יעד.",
+  },
+  addTask: {
+    title: "הוספת משימה",
+    description: "יצירת משימה חדשה עבור לקוח.",
+  },
+  editTask: {
+    title: "עריכת משימה",
+    description: "עדכון פרטי המשימה.",
   },
   vatCalculator: {
     title: "מחשבון מע״מ",
@@ -202,8 +210,10 @@ export const clients = {
       loadFailed: "לא ניתן לטעון את מסמכי הלקוח.",
     },
     tasks: {
-      disabledAction: "ניהול משימות יתווסף בהמשך",
-      explanation: "עדיין אין משימות ללקוח זה. ניהול משימות יתווסף בהמשך.",
+      explanation: "עדיין אין משימות ללקוח זה.",
+      viewAll: "כל המשימות של הלקוח",
+      addTask: "הוספת משימה",
+      loadFailed: "לא ניתן לטעון את משימות הלקוח.",
     },
     payments: {
       disabledAction: "מעקב תשלומים יתווסף בהמשך",
@@ -299,5 +309,84 @@ export const documents = {
   details: {
     notFoundTitle: "המסמך לא נמצא",
     notFoundDescription: "ייתכן שהמסמך נמחק או שהמזהה אינו תקין.",
+  },
+};
+
+export const tasks = {
+  actions: {
+    addTask: "הוספת משימה",
+    saveTask: "שמירת משימה",
+    saveChanges: "שמירת שינויים",
+    deleteTask: "מחיקת משימה",
+    markDone: "סימון כהושלם",
+    editTask: "עריכת משימה",
+    backToTasks: "חזרה לרשימת משימות",
+  },
+  fields: {
+    client: "לקוח",
+    document: "מסמך קשור",
+    noDocument: "ללא מסמך",
+    documentLoading: "טוען מסמכים…",
+    title: "כותרת",
+    description: "תיאור",
+    dueDate: "תאריך יעד",
+    priority: "עדיפות",
+    status: "סטטוס",
+    clientFilter: "סינון לפי לקוח",
+    statusFilter: "סינון לפי סטטוס",
+    priorityFilter: "סינון לפי עדיפות",
+  },
+  list: {
+    emptyTitle: "אין משימות עדיין",
+    emptyDescription: "הוסיפו משימה ראשונה כדי להתחיל לעקוב אחר עבודה פנימית.",
+    noResultsTitle: "לא נמצאו משימות",
+    noResultsDescription: "נסו לשנות את הסינון או להוסיף משימה חדשה.",
+    columnTitle: "כותרת",
+    columnClient: "לקוח",
+    columnDueDate: "תאריך יעד",
+    columnPriority: "עדיפות",
+    columnStatus: "סטטוס",
+    columnActions: "פעולות",
+  },
+  badges: {
+    urgent: "דחוף",
+    overdue: "באיחור",
+  },
+  confirm: {
+    deleteTitle: "מחיקת משימה",
+    deleteDescription: "האם למחוק את המשימה? פעולה זו אינה ניתנת לביטול.",
+    deleteConfirm: "מחק משימה",
+    markDoneTitle: "סימון משימה כהושלמה",
+    markDoneDescription: "האם לסמן את המשימה כהושלמה?",
+    markDoneConfirm: "סימון כהושלם",
+    cancel: "ביטול",
+  },
+  validation: {
+    clientRequired: "יש לבחור לקוח.",
+    titleRequired: "כותרת המשימה היא שדה חובה.",
+    noChanges: "לא בוצעו שינויים לשמירה.",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את רשימת המשימות.",
+    loadTaskFailed: "לא ניתן לטעון את פרטי המשימה.",
+    saveFailed: "לא ניתן לשמור את המשימה.",
+    deleteFailed: "לא ניתן למחוק את המשימה.",
+    markDoneFailed: "לא ניתן לסמן את המשימה כהושלמה.",
+    unexpected: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
+  },
+  details: {
+    notFoundTitle: "המשימה לא נמצאה",
+    notFoundDescription: "ייתכן שהמשימה נמחקה או שהמזהה אינו תקין.",
+  },
+  priorities: {
+    low: "נמוכה",
+    medium: "בינונית",
+    high: "גבוהה",
+    urgent: "דחוף",
+  },
+  statuses: {
+    open: "פתוח",
+    in_progress: "בטיפול",
+    done: "הושלם",
   },
 };

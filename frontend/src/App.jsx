@@ -11,6 +11,8 @@ import DocumentsPage from "./pages/DocumentsPage";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
 import DocumentDetailsPage from "./pages/DocumentDetailsPage";
 import EditDocumentPage from "./pages/EditDocumentPage";
+import EditTaskPage from "./pages/EditTaskPage";
+import AddTaskPage from "./pages/AddTaskPage";
 import TasksPage from "./pages/TasksPage";
 import VatCalculatorPage from "./pages/VatCalculatorPage";
 import MonthlyReportsPage from "./pages/MonthlyReportsPage";
@@ -33,6 +35,8 @@ export default function App() {
           <Route path="documents/:id" element={<DocumentDetailsPage />} />
           <Route path="documents/:id/edit" element={<EditDocumentPage />} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="tasks/new" element={<AddTaskPage />} />
+          <Route path="tasks/:id/edit" element={<EditTaskPage />} />
           <Route path="vat-calculator" element={<VatCalculatorPage />} />
           <Route path="reports" element={<MonthlyReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />

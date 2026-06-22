@@ -12,6 +12,9 @@ NOT_FOUND_MESSAGE = "הלקוח לא נמצא."
 CLIENT_HAS_DOCUMENTS_MESSAGE = (
     "לא ניתן למחוק לקוח שיש לו מסמכים קשורים. יש למחוק את המסמכים הקשורים תחילה."
 )
+CLIENT_HAS_TASKS_MESSAGE = (
+    "לא ניתן למחוק לקוח שיש לו משימות קשורות. יש למחוק את המשימות הקשורות תחילה."
+)
 
 
 def _utc_now() -> datetime:
@@ -93,6 +96,15 @@ def delete_client(db: Session, client: Client) -> None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=CLIENT_HAS_DOCUMENTS_MESSAGE,
+        )
+
+    from app.crud.task import count_tasks_for_client
+
+    task_count = count_tasks_for_client(db, client.id)
+    if task_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=CLIENT_HAS_TASKS_MESSAGE,
         )
 
     db.delete(client)
