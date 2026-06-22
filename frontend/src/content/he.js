@@ -77,7 +77,7 @@ export const pages = {
   },
   reports: {
     title: "דוחות חודשיים",
-    description: "דוחות חודשיים יתווספו בשלב מאוחר יותר.",
+    description: "סיכום פנימי חודשי לפי תאריך המסמך במערכת.",
   },
   settings: {
     title: "הגדרות",
@@ -547,6 +547,49 @@ export const dashboard = {
     "נובמבר",
     "דצמבר",
   ],
+};
+
+export const reports = {
+  disclaimer: "סיכום פנימי למשרד — אינו דוח מס רשמי",
+  filters: {
+    monthLabel: "חודש",
+    yearLabel: "שנה",
+    apply: "הצגת דוח",
+  },
+  summary: {
+    sectionTitle: "סיכום התקופה",
+    clientsHandled: "לקוחות שטופלו",
+    documentsInPeriod: "מסמכים בתקופה הנבחרת",
+    totalBeforeVat: "סה״כ לפני מע״מ",
+    vatTotal: "סה״כ מע״מ",
+    totalIncludingVat: "סה״כ כולל מע״מ",
+  },
+  statusBreakdown: {
+    title: "פירוט לפי סטטוס מסמך",
+  },
+  clientBreakdown: {
+    title: "פירוט לפי לקוח",
+    clientName: "שם הלקוח",
+    documentCount: "מסמכים",
+    totalBeforeVat: "לפני מע״מ",
+    vatTotal: "מע״מ",
+    totalIncludingVat: "כולל מע״מ",
+  },
+  emptyPeriod: {
+    title: "אין מסמכים בתקופה הנבחרת",
+    description:
+      "לא נמצאו מסמכים עם תאריך מסמך בחודש ובשנה שנבחרו. ניתן לבחור תקופה אחרת או להוסיף מסמכים עם תאריך מתאים.",
+  },
+  validation: {
+    monthRequired: "יש לבחור חודש.",
+    yearRequired: "יש להזין שנה.",
+    invalidMonth: "חודש לא תקין. יש לבחור ערך בין 1 ל-12.",
+    invalidYear: "שנה לא תקינה. יש להזין ערך בין 1900 ל-2100.",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את הדוח החודשי.",
+    retry: "נסו שוב",
+  },
 };
 
 export const settings = {
