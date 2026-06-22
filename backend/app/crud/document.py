@@ -28,6 +28,9 @@ DELETE_FAILED_MESSAGE = "לא ניתן למחוק את המסמך."
 DOCUMENT_HAS_TASKS_MESSAGE = (
     "לא ניתן למחוק מסמך שקשור למשימות. יש לעדכן או למחוק את המשימות הקשורות תחילה."
 )
+DOCUMENT_HAS_PAYMENTS_MESSAGE = (
+    "לא ניתן למחוק מסמך שקשור לרשומות תשלום. יש לעדכן או למחוק את רשומות התשלום תחילה."
+)
 
 
 def _utc_now() -> datetime:
@@ -204,11 +207,16 @@ def update_document(
 
 
 def delete_document(db: Session, document: Document) -> None:
+    from app.crud.payment import count_payments_for_document
     from app.crud.task import count_tasks_for_document
 
     linked_task_count = count_tasks_for_document(db, document.id)
     if linked_task_count > 0:
         raise ValueError(DOCUMENT_HAS_TASKS_MESSAGE)
+
+    linked_payment_count = count_payments_for_document(db, document.id)
+    if linked_payment_count > 0:
+        raise ValueError(DOCUMENT_HAS_PAYMENTS_MESSAGE)
 
     relative_key = document.file_path
 

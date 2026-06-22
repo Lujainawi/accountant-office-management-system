@@ -13,6 +13,8 @@ import DocumentDetailsPage from "./pages/DocumentDetailsPage";
 import EditDocumentPage from "./pages/EditDocumentPage";
 import EditTaskPage from "./pages/EditTaskPage";
 import AddTaskPage from "./pages/AddTaskPage";
+import AddPaymentPage from "./pages/AddPaymentPage";
+import EditPaymentPage from "./pages/EditPaymentPage";
 import TasksPage from "./pages/TasksPage";
 import VatCalculatorPage from "./pages/VatCalculatorPage";
 import MonthlyReportsPage from "./pages/MonthlyReportsPage";
@@ -37,6 +39,8 @@ export default function App() {
           <Route path="tasks" element={<TasksPage />} />
           <Route path="tasks/new" element={<AddTaskPage />} />
           <Route path="tasks/:id/edit" element={<EditTaskPage />} />
+          <Route path="payments/new" element={<AddPaymentPage />} />
+          <Route path="payments/:id/edit" element={<EditPaymentPage />} />
           <Route path="vat-calculator" element={<VatCalculatorPage />} />
           <Route path="reports" element={<MonthlyReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />

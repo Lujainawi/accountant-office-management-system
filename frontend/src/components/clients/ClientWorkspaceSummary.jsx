@@ -56,6 +56,32 @@ export default function ClientWorkspaceSummary({ summary }) {
           value={summary.documents_by_status.missing_information}
         />
       </div>
+
+      <div
+        className="client-workspace-summary__status-strip"
+        aria-label={workspace.summary.paymentStatusTitle}
+      >
+        <StatusCount
+          label={workspace.summary.paymentStatusUnpaid}
+          value={summary.payments_by_status?.unpaid ?? 0}
+        />
+        <StatusCount
+          label={workspace.summary.paymentStatusPaid}
+          value={summary.payments_by_status?.paid ?? 0}
+        />
+        <StatusCount
+          label={workspace.summary.paymentStatusPartiallyPaid}
+          value={summary.payments_by_status?.partially_paid ?? 0}
+        />
+        <StatusCount
+          label={workspace.summary.paymentStatusPending}
+          value={summary.payments_by_status?.pending ?? 0}
+        />
+        <StatusCount
+          label={workspace.summary.paymentStatusFailed}
+          value={summary.payments_by_status?.failed ?? 0}
+        />
+      </div>
     </div>
   );
 }

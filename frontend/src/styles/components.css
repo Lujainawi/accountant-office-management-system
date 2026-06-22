@@ -1003,12 +1003,59 @@
 }
 
 .client-tasks-list__badges,
+.client-payments-list__badges,
 .task-indicators,
 .task-row__title-cell {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   align-items: center;
+}
+
+.client-payments-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.client-payments-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.client-payments-list__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.client-payments-list__link {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.client-payments-list__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.payment-disclaimer,
+.payment-form__disclaimer {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  margin-block-end: var(--space-4);
 }
 
 .task-row__title-cell {
@@ -1022,7 +1069,8 @@
   margin-block-end: var(--space-4);
 }
 
-.task-form {
+.task-form,
+.payment-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);

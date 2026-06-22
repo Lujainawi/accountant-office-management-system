@@ -63,6 +63,14 @@ export const pages = {
     title: "עריכת משימה",
     description: "עדכון פרטי המשימה.",
   },
+  addPayment: {
+    title: "הוספת רשומת תשלום",
+    description: "רישום ידני של תשלום שהתקבל מהלקוח.",
+  },
+  editPayment: {
+    title: "עריכת רשומת תשלום",
+    description: "עדכון פרטי רשומת התשלום.",
+  },
   vatCalculator: {
     title: "מחשבון מע״מ",
     description: "חישוב סכומי מע״מ לפני מע״מ או מסכום כולל מע״מ, לפי שיעור המע״מ הפעיל.",
@@ -192,6 +200,12 @@ export const clients = {
       vatTotal: "סה״כ מע״מ",
       totalIncludingVat: "סה״כ כולל מע״מ",
       paymentRecords: "רשומות תשלום",
+      paymentStatusTitle: "סטטוס תשלומים",
+      paymentStatusUnpaid: "לא שולם",
+      paymentStatusPaid: "שולם",
+      paymentStatusPartiallyPaid: "שולם חלקית",
+      paymentStatusPending: "ממתין",
+      paymentStatusFailed: "נכשל",
       documentStatusTitle: "סטטוס מסמכים",
       statusNew: "חדש",
       statusInProgress: "בטיפול",
@@ -216,14 +230,92 @@ export const clients = {
       loadFailed: "לא ניתן לטעון את משימות הלקוח.",
     },
     payments: {
-      disabledAction: "מעקב תשלומים יתווסף בהמשך",
-      explanation: "עדיין אין רשומות תשלום ללקוח זה. מעקב תשלומים יתווסף בהמשך.",
+      explanation: "עדיין אין רשומות תשלום ללקוח זה.",
+      addPayment: "הוספת רשומת תשלום",
+      loadFailed: "לא ניתן לטעון את רשומות התשלום של הלקוח.",
     },
     notes: {
       saveNotes: "שמירת הערות",
       saveSuccess: "הערות נשמרו בהצלחה.",
       saveFailed: "לא ניתן לשמור את ההערות.",
     },
+  },
+};
+
+export const payments = {
+  disclaimer:
+    "רישום פנימי של תשלומים שהתקבלו מהלקוח. המערכת אינה מבצעת סליקה, גבייה או תשלום בפועל.",
+  actions: {
+    savePayment: "שמירת רשומת תשלום",
+    saveChanges: "שמירת שינויים",
+    deletePayment: "מחיקת רשומת תשלום",
+    cancel: "ביטול",
+    backToClient: "חזרה לפרטי הלקוח",
+    backToClients: "חזרה לרשימת לקוחות",
+  },
+  fields: {
+    client: "לקוח",
+    amount: "סכום",
+    status: "סטטוס תשלום",
+    paymentMethod: "אמצעי תשלום",
+    paymentDate: "תאריך תשלום",
+    paymentPeriod: "תקופה / שירות",
+    document: "מסמך מקושר",
+    notes: "הערות פנימיות",
+    noDocument: "ללא מסמך",
+    noMethod: "ללא אמצעי תשלום",
+  },
+  statuses: {
+    unpaid: "לא שולם",
+    paid: "שולם",
+    partially_paid: "שולם חלקית",
+    pending: "ממתין",
+    failed: "נכשל",
+  },
+  methods: {
+    cash: "מזומן",
+    bank_transfer: "העברה בנקאית",
+    check: "צ׳ק",
+    bit: "ביט",
+    standing_order: "הוראת קבע",
+    other: "אחר",
+  },
+  list: {
+    paymentDateLabel: "תאריך",
+    methodLabel: "אמצעי",
+    periodLabel: "תקופה",
+    documentLabel: "מסמך",
+  },
+  details: {
+    notFoundTitle: "רשומת התשלום לא נמצאה",
+    notFoundDescription: "ייתכן שהרשומה נמחקה או שהמזהה אינו תקין.",
+  },
+  confirm: {
+    cancel: "ביטול",
+    deleteTitle: "מחיקת רשומת תשלום",
+    deleteDescription:
+      "פעולה זו תסיר את רשומת התשלום לצמיתות. לא ניתן לשחזר את הרשומה.",
+    deleteConfirm: "מחק רשומה",
+  },
+  validation: {
+    amountRequired: "סכום התשלום הוא שדה חובה.",
+    amountInvalid: "סכום התשלום אינו תקין.",
+    amountNegative: "סכום התשלום חייב להיות ערך לא שלילי.",
+    amountScale: "סכום התשלום יכול לכלול לכל היותר שתי ספרות עשרוניות.",
+    methodRequired: "יש לבחור אמצעי תשלום עבור סטטוס שולם או שולם חלקית.",
+    dateRequired: "יש להזין תאריך תשלום עבור סטטוס שולם או שולם חלקית.",
+    periodTooLong: "שדה התקופה/שירות יכול לכלול עד 100 תווים.",
+    noChanges: "לא בוצעו שינויים לשמירה.",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את רשומות התשלום.",
+    loadClientFailed: "לא ניתן לטעון את פרטי הלקוח.",
+    saveFailed: "לא ניתן לשמור את רשומת התשלום.",
+    deleteFailed: "לא ניתן למחוק את רשומת התשלום.",
+    unexpected: "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.",
+    missingClientTitle: "לא ניתן להוסיף רשומת תשלום",
+    missingClientDescription:
+      "יש לפתוח רשומת תשלום חדשה מתוך פרטי לקוח. בחרו לקוח מהרשימה ונסו שוב.",
   },
 };
 

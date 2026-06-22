@@ -16,6 +16,11 @@ EXPLICIT_NULL_VAT_RATE_MESSAGE = "שיעור מע״מ הוא שדה חובה."
 EXPLICIT_NULL_AMOUNT_MESSAGE = "סכום לפני מע״מ הוא שדה חובה."
 INVALID_FORM_AMOUNT_MESSAGE = "סכום לפני מע״מ הוא שדה חובה."
 INVALID_FORM_VAT_RATE_MESSAGE = "שיעור מע״מ הוא שדה חובה."
+INVALID_PAYMENT_AMOUNT_MESSAGE = "סכום התשלום חייב להיות ערך לא שלילי."
+INVALID_PAYMENT_DECIMAL_SCALE_MESSAGE = (
+    "סכום התשלום יכול לכלול לכל היותר שתי ספרות עשרוניות."
+)
+INVALID_PAYMENT_AMOUNT_FINITE_MESSAGE = "סכום התשלום אינו תקין."
 
 
 class Omitted:
@@ -47,6 +52,18 @@ def validate_amount_before_vat(value: Decimal) -> Decimal:
     if value > MAX_MONEY:
         raise MoneyValidationError(EXCEEDS_MAX_MONEY_MESSAGE)
     return value
+
+
+def validate_payment_amount(value: Decimal) -> Decimal:
+    _ensure_finite(value)
+    if value < 0:
+        raise MoneyValidationError(INVALID_PAYMENT_AMOUNT_MESSAGE)
+    _ensure_at_most_two_decimal_places(
+        value, scale_message=INVALID_PAYMENT_DECIMAL_SCALE_MESSAGE
+    )
+    if value > MAX_MONEY:
+        raise MoneyValidationError(EXCEEDS_MAX_MONEY_MESSAGE)
+    return value.quantize(TWO_PLACES)
 
 
 def validate_vat_rate(value: Decimal) -> Decimal:

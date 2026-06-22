@@ -4,9 +4,10 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
+from app.crud.payment import count_payments_by_status_for_client, count_payments_for_client
 from app.crud.task import count_open_tasks_for_client
 from app.models.document import DOCUMENT_STATUSES, Document
-from app.schemas.client_summary import ClientSummaryResponse, DocumentsByStatus
+from app.schemas.client_summary import ClientSummaryResponse, DocumentsByStatus, PaymentsByStatus
 
 ZERO_MONEY = Decimal("0.00")
 
@@ -47,6 +48,8 @@ def get_client_summary(db: Session, client_id: int) -> ClientSummaryResponse | N
     total_including_vat = Decimal(str(totals[2])).quantize(Decimal("0.01"))
 
     open_task_count = count_open_tasks_for_client(db, client_id)
+    payment_record_count = count_payments_for_client(db, client_id)
+    payment_status_counts = count_payments_by_status_for_client(db, client_id)
 
     return ClientSummaryResponse(
         client_id=client.id,
@@ -56,5 +59,6 @@ def get_client_summary(db: Session, client_id: int) -> ClientSummaryResponse | N
         vat_total=vat_total,
         total_including_vat=total_including_vat,
         open_task_count=open_task_count,
-        payment_record_count=0,
+        payment_record_count=payment_record_count,
+        payments_by_status=PaymentsByStatus(**payment_status_counts),
     )

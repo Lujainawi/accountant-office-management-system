@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
 from app.crud.document import (
+    DOCUMENT_HAS_PAYMENTS_MESSAGE,
     DOCUMENT_HAS_TASKS_MESSAGE,
     NOT_FOUND_MESSAGE,
     create_document,
@@ -231,7 +232,7 @@ def remove_document(
         delete_document(db, document)
     except ValueError as exc:
         message = str(exc)
-        if message == DOCUMENT_HAS_TASKS_MESSAGE:
+        if message in {DOCUMENT_HAS_TASKS_MESSAGE, DOCUMENT_HAS_PAYMENTS_MESSAGE}:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=message,

@@ -15,6 +15,9 @@ CLIENT_HAS_DOCUMENTS_MESSAGE = (
 CLIENT_HAS_TASKS_MESSAGE = (
     "לא ניתן למחוק לקוח שיש לו משימות קשורות. יש למחוק את המשימות הקשורות תחילה."
 )
+CLIENT_HAS_PAYMENTS_MESSAGE = (
+    "לא ניתן למחוק לקוח שיש לו רשומות תשלום קשורות. יש למחוק את רשומות התשלום תחילה."
+)
 
 
 def _utc_now() -> datetime:
@@ -105,6 +108,15 @@ def delete_client(db: Session, client: Client) -> None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=CLIENT_HAS_TASKS_MESSAGE,
+        )
+
+    from app.crud.payment import count_payments_for_client
+
+    payment_count = count_payments_for_client(db, client.id)
+    if payment_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=CLIENT_HAS_PAYMENTS_MESSAGE,
         )
 
     db.delete(client)
