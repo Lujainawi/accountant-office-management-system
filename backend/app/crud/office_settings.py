@@ -67,4 +67,4 @@ def update_office_settings(db: Session, update_data: OfficeSettingsUpdate):
     db.add(settings_row)
     db.commit()
     db.refresh(settings_row)
-    return office_settings_to_response(settings_row)
+    return office_settings_to_response(settings_row, db)

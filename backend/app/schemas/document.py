@@ -4,11 +4,15 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
+from app.utils.money_validation import (
+    EXPLICIT_NULL_AMOUNT_MESSAGE,
+    EXPLICIT_NULL_VAT_RATE_MESSAGE,
+    validate_amount_before_vat,
+    validate_vat_rate,
+)
+
 DocumentType = Literal["invoice", "receipt", "report", "bank_document", "other"]
 DocumentStatus = Literal["new", "in_progress", "completed", "missing_information"]
-
-INVALID_AMOUNT_MESSAGE = "סכום חייב להיות ערך לא שלילי."
-INVALID_VAT_RATE_MESSAGE = "שיעור מע״מ חייב להיות ערך לא שלילי."
 
 
 def ensure_utc(value: datetime) -> datetime:
@@ -33,8 +37,8 @@ class DocumentCreate(BaseModel):
     document_name: str = Field(min_length=1, max_length=255)
     document_type: DocumentType
     document_date: date
-    amount_before_vat: Decimal = Field(ge=0)
-    vat_rate: Decimal | None = Field(default=None, ge=0)
+    amount_before_vat: Decimal
+    vat_rate: Decimal | None = None
     status: DocumentStatus
     notes: str | None = None
 
@@ -49,16 +53,20 @@ class DocumentCreate(BaseModel):
     @field_validator("amount_before_vat")
     @classmethod
     def validate_amount(cls, value: Decimal) -> Decimal:
-        if value < 0:
-            raise ValueError(INVALID_AMOUNT_MESSAGE)
-        return value
+        return validate_amount_before_vat(value)
 
     @field_validator("vat_rate")
     @classmethod
-    def validate_vat_rate(cls, value: Decimal | None) -> Decimal | None:
-        if value is not None and value < 0:
-            raise ValueError(INVALID_VAT_RATE_MESSAGE)
-        return value
+    def validate_vat_rate_field(cls, value: Decimal | None) -> Decimal | None:
+        if value is None:
+            return None
+        return validate_vat_rate(value)
+
+    @model_validator(mode="after")
+    def reject_explicit_null_vat_rate(self) -> "DocumentCreate":
+        if "vat_rate" in self.model_fields_set and self.vat_rate is None:
+            raise ValueError(EXPLICIT_NULL_VAT_RATE_MESSAGE)
+        return self
 
     @field_validator("notes")
     @classmethod
@@ -71,8 +79,8 @@ class DocumentUpdate(BaseModel):
     document_name: str | None = Field(default=None, min_length=1, max_length=255)
     document_type: DocumentType | None = None
     document_date: date | None = None
-    amount_before_vat: Decimal | None = Field(default=None, ge=0)
-    vat_rate: Decimal | None = Field(default=None, ge=0)
+    amount_before_vat: Decimal | None = None
+    vat_rate: Decimal | None = None
     status: DocumentStatus | None = None
     notes: str | None = None
 
@@ -80,6 +88,17 @@ class DocumentUpdate(BaseModel):
     def validate_has_updates(self) -> "DocumentUpdate":
         if not self.model_fields_set:
             raise ValueError("יש לספק לפחות שדה אחד לעדכון.")
+        return self
+
+    @model_validator(mode="after")
+    def reject_explicit_null_money_fields(self) -> "DocumentUpdate":
+        if (
+            "amount_before_vat" in self.model_fields_set
+            and self.amount_before_vat is None
+        ):
+            raise ValueError(EXPLICIT_NULL_AMOUNT_MESSAGE)
+        if "vat_rate" in self.model_fields_set and self.vat_rate is None:
+            raise ValueError(EXPLICIT_NULL_VAT_RATE_MESSAGE)
         return self
 
     @field_validator("document_name")
@@ -95,16 +114,16 @@ class DocumentUpdate(BaseModel):
     @field_validator("amount_before_vat")
     @classmethod
     def validate_amount(cls, value: Decimal | None) -> Decimal | None:
-        if value is not None and value < 0:
-            raise ValueError(INVALID_AMOUNT_MESSAGE)
-        return value
+        if value is None:
+            return None
+        return validate_amount_before_vat(value)
 
     @field_validator("vat_rate")
     @classmethod
-    def validate_vat_rate(cls, value: Decimal | None) -> Decimal | None:
-        if value is not None and value < 0:
-            raise ValueError(INVALID_VAT_RATE_MESSAGE)
-        return value
+    def validate_vat_rate_field(cls, value: Decimal | None) -> Decimal | None:
+        if value is None:
+            return None
+        return validate_vat_rate(value)
 
     @field_validator("notes")
     @classmethod

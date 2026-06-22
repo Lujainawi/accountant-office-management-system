@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.crud.office_settings import get_office_settings
-
-SECURE_SYSTEM_ALLOWLIST = frozenset({"pdf", "png", "jpg", "jpeg", "docx", "xlsx"})
-
-CANONICAL_EXTENSION_ORDER = ("docx", "jpeg", "jpg", "pdf", "png", "xlsx")
+from app.utils.upload_policy_constants import (
+    CANONICAL_EXTENSION_ORDER,
+    SECURE_SYSTEM_ALLOWLIST,
+)
 
 EXTENSION_TO_MIME = {
     "pdf": "application/pdf",

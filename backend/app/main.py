@@ -12,6 +12,7 @@ from app.routes.documents import router as documents_router
 from app.routes.health import router as health_router
 from app.routes.settings import router as settings_router
 from app.routes.tasks import router as tasks_router
+from app.routes.vat import router as vat_router
 
 
 @asynccontextmanager
@@ -37,3 +38,4 @@ app.include_router(clients_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(documents_router, prefix="/api")
 app.include_router(tasks_router, prefix="/api")
+app.include_router(vat_router, prefix="/api")

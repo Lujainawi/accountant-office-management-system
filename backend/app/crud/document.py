@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
 from app.crud.office_settings import get_office_settings
-from app.models.document import DOCUMENT_STATUSES, DOCUMENT_TYPES, Document
+from app.models.document import Document
 from app.schemas.document import DocumentCreate, DocumentUpdate, document_to_response
 from app.services.document_storage import delete_file_safe, generate_storage_key, save_file_content
-from app.services.vat import calculate_vat_amounts
+from app.services.vat import compute_forward_vat
 from app.utils.file_validation import (
     extract_final_extension,
     get_effective_allowed_extensions,
@@ -34,9 +34,9 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _resolve_vat_rate_for_create(db: Session, vat_rate: Decimal | None) -> Decimal:
-    if vat_rate is not None:
-        return vat_rate
+def _resolve_vat_rate_for_create(db: Session, document_data: DocumentCreate) -> Decimal:
+    if "vat_rate" in document_data.model_fields_set and document_data.vat_rate is not None:
+        return document_data.vat_rate
     settings_row = get_office_settings(db)
     return settings_row.default_vat_rate
 
@@ -44,17 +44,14 @@ def _resolve_vat_rate_for_create(db: Session, vat_rate: Decimal | None) -> Decim
 def _resolve_vat_rate_for_update(
     document: Document, update_data: DocumentUpdate
 ) -> Decimal:
-    if "vat_rate" in update_data.model_fields_set and update_data.vat_rate is not None:
-        return update_data.vat_rate
+    if "vat_rate" in update_data.model_fields_set:
+        return update_data.vat_rate  # type: ignore[return-value]
     return document.vat_rate
 
 
 def _resolve_amount_for_update(document: Document, update_data: DocumentUpdate) -> Decimal:
-    if (
-        "amount_before_vat" in update_data.model_fields_set
-        and update_data.amount_before_vat is not None
-    ):
-        return update_data.amount_before_vat
+    if "amount_before_vat" in update_data.model_fields_set:
+        return update_data.amount_before_vat  # type: ignore[return-value]
     return document.amount_before_vat
 
 
@@ -81,8 +78,8 @@ async def create_document(
     validate_extension_allowed(extension, allowed_extensions)
     mime_type = validate_file_content(extension, file_content)
 
-    vat_rate = _resolve_vat_rate_for_create(db, document_data.vat_rate)
-    vat_amount, total_amount = calculate_vat_amounts(
+    vat_rate = _resolve_vat_rate_for_create(db, document_data)
+    amount_before_vat, vat_amount, total_amount = compute_forward_vat(
         document_data.amount_before_vat, vat_rate
     )
 
@@ -101,7 +98,7 @@ async def create_document(
         mime_type=mime_type,
         file_size_bytes=len(file_content),
         document_date=document_data.document_date,
-        amount_before_vat=document_data.amount_before_vat,
+        amount_before_vat=amount_before_vat,
         vat_rate=vat_rate,
         vat_amount=vat_amount,
         total_amount=total_amount,
@@ -178,14 +175,16 @@ def update_document(
     if "client_id" in update_fields:
         _ensure_client_exists(db, update_fields["client_id"])
 
+    amount_before_vat = _resolve_amount_for_update(document, update_data)
+    vat_rate = _resolve_vat_rate_for_update(document, update_data)
+    amount_before_vat, vat_amount, total_amount = compute_forward_vat(
+        amount_before_vat, vat_rate
+    )
+
     for field_name, value in update_fields.items():
         if field_name in {"vat_rate", "amount_before_vat"}:
             continue
         setattr(document, field_name, value)
-
-    amount_before_vat = _resolve_amount_for_update(document, update_data)
-    vat_rate = _resolve_vat_rate_for_update(document, update_data)
-    vat_amount, total_amount = calculate_vat_amounts(amount_before_vat, vat_rate)
 
     document.amount_before_vat = amount_before_vat
     document.vat_rate = vat_rate

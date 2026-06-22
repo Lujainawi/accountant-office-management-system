@@ -1,3 +1,5 @@
+import { previewForwardVat, validateMoneyInput, validateVatRateInput } from "./vat";
+
 export const DOCUMENT_TYPE_OPTIONS = [
   { value: "invoice", label: "חשבונית" },
   { value: "receipt", label: "קבלה" },
@@ -78,6 +80,49 @@ export const EMPTY_DOCUMENT_FORM_VALUES = {
   notes: "",
 };
 
+export function validateDocumentMoneyFields(values) {
+  const errors = {};
+  const amountError = validateMoneyInput(values.amount_before_vat, { required: true });
+  if (amountError) {
+    errors.amount_before_vat = amountError;
+  }
+  const vatError = validateVatRateInput(values.vat_rate, { required: true });
+  if (vatError) {
+    errors.vat_rate = vatError;
+  }
+  return errors;
+}
+
+export function hasDocumentChanges(values, initial) {
+  if (String(values.client_id) !== String(initial.client_id ?? "")) {
+    return true;
+  }
+  if (values.document_name.trim() !== (initial.document_name ?? "").trim()) {
+    return true;
+  }
+  if (values.document_type !== (initial.document_type ?? "invoice")) {
+    return true;
+  }
+  if (values.document_date !== (initial.document_date ?? "")) {
+    return true;
+  }
+  if (values.amount_before_vat.trim() !== String(initial.amount_before_vat ?? "").trim()) {
+    return true;
+  }
+  if (values.vat_rate.trim() !== String(initial.vat_rate ?? "").trim()) {
+    return true;
+  }
+  if (values.status !== (initial.status ?? "new")) {
+    return true;
+  }
+  const newNotes = values.notes.trim() || null;
+  const oldNotes = (initial.notes ?? "").trim() || null;
+  if (newNotes !== oldNotes) {
+    return true;
+  }
+  return false;
+}
+
 export function buildCreateFormData(values, file) {
   const formData = new FormData();
   formData.append("client_id", values.client_id);
@@ -85,10 +130,8 @@ export function buildCreateFormData(values, file) {
   formData.append("document_type", values.document_type);
   formData.append("document_date", values.document_date);
   formData.append("amount_before_vat", values.amount_before_vat.trim());
+  formData.append("vat_rate", values.vat_rate.trim());
   formData.append("status", values.status);
-  if (values.vat_rate && values.vat_rate.trim()) {
-    formData.append("vat_rate", values.vat_rate.trim());
-  }
   if (values.notes && values.notes.trim()) {
     formData.append("notes", values.notes.trim());
   }
@@ -96,52 +139,36 @@ export function buildCreateFormData(values, file) {
   return formData;
 }
 
-export function buildUpdatePayload(values, initial) {
-  const payload = {};
+export function buildUpdatePayload(values) {
+  const payload = {
+    amount_before_vat: values.amount_before_vat.trim(),
+    vat_rate: values.vat_rate.trim(),
+  };
 
-  if (String(values.client_id) !== String(initial.client_id)) {
+  if (values.client_id) {
     payload.client_id = Number(values.client_id);
   }
-  if (values.document_name.trim() !== initial.document_name) {
+  if (values.document_name.trim()) {
     payload.document_name = values.document_name.trim();
   }
-  if (values.document_type !== initial.document_type) {
+  if (values.document_type) {
     payload.document_type = values.document_type;
   }
-  if (values.document_date !== initial.document_date) {
+  if (values.document_date) {
     payload.document_date = values.document_date;
   }
-  if (values.amount_before_vat.trim() !== initial.amount_before_vat) {
-    payload.amount_before_vat = values.amount_before_vat.trim();
-  }
-  if (values.vat_rate.trim() !== (initial.vat_rate ?? "").trim()) {
-    if (values.vat_rate.trim()) {
-      payload.vat_rate = values.vat_rate.trim();
-    }
-  }
-  if (values.status !== initial.status) {
+  if (values.status) {
     payload.status = values.status;
   }
 
-  const newNotes = values.notes.trim() || null;
-  const oldNotes = initial.notes ?? null;
-  if (newNotes !== oldNotes) {
-    payload.notes = newNotes;
-  }
+  const notes = values.notes.trim();
+  payload.notes = notes || null;
 
   return payload;
 }
 
 export function previewVatTotals(amountBeforeVat, vatRate) {
-  const amount = Number(amountBeforeVat);
-  const rate = Number(vatRate);
-  if (!Number.isFinite(amount) || !Number.isFinite(rate) || amount < 0 || rate < 0) {
-    return null;
-  }
-  const vatAmount = Math.round(((amount * rate) / 100) * 100) / 100;
-  const totalAmount = Math.round((amount + vatAmount) * 100) / 100;
-  return {
-    vatAmount: vatAmount.toFixed(2),
-    totalAmount: totalAmount.toFixed(2),
-  };
+  return previewForwardVat(amountBeforeVat, vatRate);
 }
+
+export { validateMoneyInput, validateVatRateInput };

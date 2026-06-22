@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import PageHeader from "../components/PageHeader";
+import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import LoadingState from "../components/LoadingState";
 import ErrorMessage from "../components/ErrorMessage";
 import DocumentForm from "../components/documents/DocumentForm";
 import { listClients } from "../api/clients";
+import { getSettings } from "../api/settings";
 import { createDocument, getDocumentUploadPolicy } from "../api/documents";
+import { ApiError } from "../api/client";
 import { documents as documentsText, pages, ui } from "../content/he";
 import {
   EMPTY_DOCUMENT_FORM_VALUES,
@@ -14,6 +17,7 @@ import {
   formatPolicyExtensions,
 } from "../utils/documentForm";
 import { getDocumentErrorMessage } from "../utils/documentErrors";
+import { normalizeVatRateDisplay } from "../utils/vat";
 
 export default function UploadDocumentPage() {
   const navigate = useNavigate();
@@ -22,41 +26,48 @@ export default function UploadDocumentPage() {
 
   const [clients, setClients] = useState([]);
   const [policy, setPolicy] = useState(null);
+  const [defaultVatRate, setDefaultVatRate] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [serverError, setServerError] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      setIsLoading(true);
-      setLoadError("");
-      try {
-        const [clientsData, policyData] = await Promise.all([
-          listClients(),
-          getDocumentUploadPolicy(),
-        ]);
-        setClients(clientsData);
-        setPolicy(policyData);
-      } catch (error) {
-        const message = getDocumentErrorMessage(error, documentsText.errors.loadFailed);
-        if (message) {
-          setLoadError(message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
+  const loadPageData = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError("");
+    try {
+      const [clientsData, policyData, settingsData] = await Promise.all([
+        listClients(),
+        getDocumentUploadPolicy(),
+        getSettings(),
+      ]);
+      setClients(clientsData);
+      setPolicy(policyData);
+      setDefaultVatRate(normalizeVatRateDisplay(settingsData.default_vat_rate));
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : documentsText.errors.loadUploadPageFailed;
+      setLoadError(message || documentsText.errors.loadUploadPageFailed);
+      setClients([]);
+      setPolicy(null);
+      setDefaultVatRate("");
+    } finally {
+      setIsLoading(false);
     }
-
-    load();
   }, []);
+
+  useEffect(() => {
+    loadPageData();
+  }, [loadPageData]);
 
   const initialValues = useMemo(
     () => ({
       ...EMPTY_DOCUMENT_FORM_VALUES,
       client_id: presetClientId,
-      vat_rate: "18.00",
+      vat_rate: defaultVatRate,
     }),
-    [presetClientId],
+    [presetClientId, defaultVatRate],
   );
 
   const fileHint = policy
@@ -84,7 +95,20 @@ export default function UploadDocumentPage() {
   }
 
   if (loadError) {
-    return <ErrorMessage message={loadError} />;
+    return (
+      <>
+        <PageHeader title={pages.uploadDocument.title} description={pages.uploadDocument.description} />
+        <ErrorMessage message={loadError} />
+        <div className="page-actions">
+          <PrimaryButton type="button" onClick={loadPageData}>
+            {documentsText.actions.retryLoad}
+          </PrimaryButton>
+          <SecondaryButton type="button" onClick={() => navigate("/documents")}>
+            {documentsText.actions.backToDocuments}
+          </SecondaryButton>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -96,6 +120,7 @@ export default function UploadDocumentPage() {
         </SecondaryButton>
       </div>
       <DocumentForm
+        key={defaultVatRate}
         mode="create"
         clients={clients}
         initialValues={initialValues}

@@ -1,9 +1,9 @@
 from datetime import date
-from decimal import Decimal, InvalidOperation
 from typing import Literal
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import FileResponse
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.crud.client import get_client
@@ -29,10 +29,16 @@ from app.schemas.document import (
 )
 from app.services.document_storage import file_exists, get_file_path
 from app.utils.file_validation import (
-    FILE_TOO_LARGE_MESSAGE,
     get_upload_policy,
     max_upload_size_bytes,
     read_upload_bounded,
+)
+from app.utils.money_validation import (
+    MoneyValidationError,
+    OMITTED,
+    parse_multipart_amount,
+    parse_multipart_vat_rate,
+    validate_amount_before_vat,
 )
 
 router = APIRouter(tags=["documents"])
@@ -52,6 +58,18 @@ def _get_document_or_404(db: Session, document_id: int):
 
 def _validation_error(exc: ValueError) -> HTTPException:
     return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+
+
+def _format_validation_error(exc: ValidationError) -> HTTPException:
+    messages = []
+    for error in exc.errors():
+        message = error.get("msg")
+        if isinstance(message, str):
+            if message.startswith("Value error, "):
+                message = message.removeprefix("Value error, ")
+            messages.append(message)
+    detail = messages[0] if messages else "נתונים לא תקינים."
+    return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail)
 
 
 @router.get("/documents/upload-policy", response_model=DocumentUploadPolicyResponse)
@@ -104,47 +122,51 @@ def get_documents(
 
 @router.post("/documents", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def post_document(
-    file: UploadFile = File(...),
-    client_id: int = Form(...),
-    document_name: str = Form(...),
-    document_type: DocumentTypeQuery = Form(...),
-    document_date: date = Form(...),
-    amount_before_vat: str = Form(...),
-    status: DocumentStatusQuery = Form(...),
-    vat_rate: str | None = Form(None),
-    notes: str | None = Form(None),
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> DocumentResponse:
     _ = current_user
 
-    try:
-        amount = Decimal(amount_before_vat)
-    except (InvalidOperation, ValueError) as exc:
-        raise _validation_error(ValueError("סכום חייב להיות ערך לא שלילי.")) from exc
+    form = await request.form()
+    form_keys = set(form.keys())
 
-    parsed_vat_rate = None
-    if vat_rate is not None and vat_rate.strip():
-        try:
-            parsed_vat_rate = Decimal(vat_rate)
-        except (InvalidOperation, ValueError) as exc:
-            raise _validation_error(ValueError("שיעור מע״מ חייב להיות ערך לא שלילי.")) from exc
+    if "file" not in form_keys:
+        raise _validation_error(ValueError("יש לבחור קובץ להעלאה."))
+
+    file = form["file"]
+    if not hasattr(file, "read"):
+        raise _validation_error(ValueError("יש לבחור קובץ להעלאה."))
 
     try:
-        document_data = DocumentCreate(
-            client_id=client_id,
-            document_name=document_name,
-            document_type=document_type,
-            document_date=document_date,
-            amount_before_vat=amount,
-            vat_rate=parsed_vat_rate,
-            status=status,
-            notes=notes,
+        amount = parse_multipart_amount(
+            form.get("amount_before_vat"), key_present="amount_before_vat" in form_keys
         )
-    except ValueError as exc:
+        validate_amount_before_vat(amount)
+        parsed_vat_rate = parse_multipart_vat_rate(
+            form.get("vat_rate"), key_present="vat_rate" in form_keys
+        )
+    except MoneyValidationError as exc:
         raise _validation_error(exc) from exc
 
-    original_filename = file.filename or ""
+    create_kwargs = {
+        "client_id": int(form["client_id"]),
+        "document_name": str(form["document_name"]),
+        "document_type": str(form["document_type"]),
+        "document_date": date.fromisoformat(str(form["document_date"])),
+        "amount_before_vat": amount,
+        "status": str(form["status"]),
+        "notes": str(form["notes"]) if form.get("notes") not in (None, "") else None,
+    }
+    if parsed_vat_rate is not OMITTED:
+        create_kwargs["vat_rate"] = parsed_vat_rate
+
+    try:
+        document_data = DocumentCreate(**create_kwargs)
+    except ValidationError as exc:
+        raise _format_validation_error(exc) from exc
+
+    original_filename = getattr(file, "filename", None) or ""
     max_bytes = max_upload_size_bytes()
 
     try:
@@ -159,6 +181,8 @@ async def post_document(
             original_filename=original_filename,
             file_content=content,
         )
+    except MoneyValidationError as exc:
+        raise _validation_error(exc) from exc
     except ValueError as exc:
         raise _validation_error(exc) from exc
 
@@ -186,6 +210,8 @@ def put_document(
 
     try:
         return update_document(db, document, body)
+    except MoneyValidationError as exc:
+        raise _validation_error(exc) from exc
     except ValueError as exc:
         if str(exc) == "הלקוח לא נמצא.":
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import FormField from "../FormField";
 import ErrorMessage from "../ErrorMessage";
 import PrimaryButton from "../PrimaryButton";
@@ -9,6 +10,7 @@ import {
   DOCUMENT_STATUS_OPTIONS,
   DOCUMENT_TYPE_OPTIONS,
   previewVatTotals,
+  validateDocumentMoneyFields,
 } from "../../utils/documentForm";
 
 export default function DocumentForm({
@@ -35,6 +37,13 @@ export default function DocumentForm({
 
   function updateField(field, value) {
     setValues((current) => ({ ...current, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((current) => {
+        const next = { ...current };
+        delete next[field];
+        return next;
+      });
+    }
   }
 
   function validate() {
@@ -48,9 +57,7 @@ export default function DocumentForm({
     if (!values.document_date) {
       errors.document_date = documentsText.validation.documentDateRequired;
     }
-    if (!values.amount_before_vat.trim()) {
-      errors.amount_before_vat = documentsText.validation.amountRequired;
-    }
+    Object.assign(errors, validateDocumentMoneyFields(values));
     if (fileRequired && !selectedFile) {
       errors.file = documentsText.errors.fileRequired;
     }
@@ -73,9 +80,16 @@ export default function DocumentForm({
     }
   }
 
+  const vatHint =
+    mode === "create"
+      ? documentsText.form.createVatHint
+      : documentsText.form.editVatHint;
+
   return (
     <form className="document-form" onSubmit={handleSubmit} noValidate>
       {serverError ? <ErrorMessage message={serverError} /> : null}
+
+      <p className="document-form__info-callout">{documentsText.form.vatPolicyNotice}</p>
 
       <section className="document-form__section">
         <h2 className="document-form__section-title">{documentsText.form.infoSection}</h2>
@@ -160,13 +174,20 @@ export default function DocumentForm({
             />
           </FormField>
 
-          <FormField id="document-vat-rate" label={documentsText.fields.vatRate}>
+          <FormField
+            id="document-vat-rate"
+            label={documentsText.fields.vatRate}
+            required
+            error={fieldErrors.vat_rate}
+            hint={vatHint}
+          >
             <input
               id="document-vat-rate"
               className="form-field__input"
               inputMode="decimal"
               value={values.vat_rate}
               onChange={(event) => updateField("vat_rate", event.target.value)}
+              required
             />
           </FormField>
 
@@ -197,16 +218,22 @@ export default function DocumentForm({
         </div>
       </section>
 
-      {preview ? (
-        <section className="document-form__preview" aria-live="polite">
-          <p>
-            {documentsText.fields.vatAmount}: <MoneyDisplay value={preview.vatAmount} />
-          </p>
-          <p>
-            {documentsText.fields.totalAmount}: <MoneyDisplay value={preview.totalAmount} />
-          </p>
-        </section>
-      ) : null}
+      <section className="document-form__preview" aria-live="polite">
+        <h2 className="document-form__section-title">{documentsText.form.previewSection}</h2>
+        {preview ? (
+          <>
+            <p>
+              {documentsText.fields.vatAmount}: <MoneyDisplay value={preview.vatAmount} />
+            </p>
+            <p>
+              {documentsText.fields.totalAmount}: <MoneyDisplay value={preview.totalAmount} />
+            </p>
+          </>
+        ) : (
+          <p className="document-form__preview-empty">{documentsText.form.previewEmpty}</p>
+        )}
+        <p className="document-form__preview-note">{documentsText.form.previewNote}</p>
+      </section>
 
       {showFileField ? (
         <section className="document-form__section">
@@ -235,6 +262,11 @@ export default function DocumentForm({
         <SecondaryButton type="button" onClick={onCancel}>
           {documentsText.actions.cancel}
         </SecondaryButton>
+        {mode === "create" ? (
+          <Link className="text-link" to="/settings">
+            {documentsText.form.settingsLink}
+          </Link>
+        ) : null}
       </div>
     </form>
   );

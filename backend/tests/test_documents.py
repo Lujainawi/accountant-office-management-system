@@ -49,6 +49,7 @@ def test_client_summary_empty(auth_client, test_app):
 
 
 def test_create_document_without_vat_rate_uses_office_default(auth_client, test_app):
+    _reset_default_vat(auth_client, "18.00")
     client_id = test_app["seeded"]["client"].id
     response = upload_document(auth_client, client_id=client_id)
     assert response.status_code == 201
@@ -195,3 +196,221 @@ def test_effective_extensions_intersection(test_app):
         assert set(effective).issubset(SECURE_SYSTEM_ALLOWLIST)
     finally:
         db.close()
+
+
+def _reset_default_vat(auth_client, rate="18.00"):
+    auth_client.put("/api/settings", json={"default_vat_rate": rate})
+
+
+def test_create_document_rejects_amount_with_extra_decimals(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="10.005",
+    )
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_invalid_vat_scale(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        vat_rate="18.001",
+    )
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_vat_over_max(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        vat_rate="100.01",
+    )
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_nan_amount(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="NaN",
+    )
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_empty_vat_rate(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    files = {"file": ("demo.pdf", make_pdf_bytes(), "application/pdf")}
+    data = {
+        "client_id": str(client_id),
+        "document_name": "מסמך דוגמה",
+        "document_type": "invoice",
+        "document_date": "2026-05-15",
+        "amount_before_vat": "1000.00",
+        "status": "new",
+        "notes": "",
+        "vat_rate": "",
+    }
+    response = auth_client.post("/api/documents", files=files, data=data)
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_literal_null_vat_rate(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    files = {"file": ("demo.pdf", make_pdf_bytes(), "application/pdf")}
+    data = {
+        "client_id": str(client_id),
+        "document_name": "מסמך דוגמה",
+        "document_type": "invoice",
+        "document_date": "2026-05-15",
+        "amount_before_vat": "1000.00",
+        "status": "new",
+        "notes": "",
+        "vat_rate": "null",
+    }
+    response = auth_client.post("/api/documents", files=files, data=data)
+    assert response.status_code == 422
+
+
+def test_create_document_with_max_amount_zero_vat(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="999999999999.99",
+        vat_rate="0.00",
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["vat_amount"] == "0.00"
+    assert payload["total_amount"] == "999999999999.99"
+
+
+def test_create_document_rejects_calculated_overflow(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="999999999999.99",
+        vat_rate="0.01",
+    )
+    assert response.status_code == 422
+
+
+def test_create_document_rejects_amount_over_max(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="1000000000000.00",
+    )
+    assert response.status_code == 422
+
+
+def test_update_rejects_null_amount(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(auth_client, client_id=client_id)
+    document_id = create_response.json()["id"]
+    response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"amount_before_vat": None},
+    )
+    assert response.status_code == 422
+
+
+def test_update_rejects_null_vat_rate(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(auth_client, client_id=client_id)
+    document_id = create_response.json()["id"]
+    response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"vat_rate": None},
+    )
+    assert response.status_code == 422
+
+
+def test_update_rejects_vat_over_max(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(auth_client, client_id=client_id)
+    document_id = create_response.json()["id"]
+    response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"vat_rate": "100.01"},
+    )
+    assert response.status_code == 422
+
+
+def test_update_overflow_keeps_existing_document(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(
+        auth_client,
+        client_id=client_id,
+        amount_before_vat="999999999999.99",
+        vat_rate="0.00",
+    )
+    document_id = create_response.json()["id"]
+    before = create_response.json()
+
+    response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"vat_rate": "0.01"},
+    )
+    assert response.status_code == 422
+
+    reload = auth_client.get(f"/api/documents/{document_id}")
+    assert reload.status_code == 200
+    payload = reload.json()
+    assert payload["amount_before_vat"] == before["amount_before_vat"]
+    assert payload["vat_rate"] == before["vat_rate"]
+    assert payload["vat_amount"] == before["vat_amount"]
+    assert payload["total_amount"] == before["total_amount"]
+
+
+def test_create_with_explicit_rate_after_settings_change(auth_client, test_app):
+    _reset_default_vat(auth_client, "20.00")
+    client_id = test_app["seeded"]["client"].id
+    response = upload_document(
+        auth_client,
+        client_id=client_id,
+        vat_rate="20.00",
+        amount_before_vat="1000.00",
+    )
+    assert response.status_code == 201
+    payload = response.json()
+    assert payload["vat_rate"] == "20.00"
+    assert payload["vat_amount"] == "200.00"
+    assert payload["total_amount"] == "1200.00"
+    _reset_default_vat(auth_client, "18.00")
+
+
+def test_existing_document_rate_preserved_after_settings_change(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(
+        auth_client,
+        client_id=client_id,
+        vat_rate="17.00",
+        amount_before_vat="1000.00",
+    )
+    document_id = create_response.json()["id"]
+
+    settings_response = auth_client.put(
+        "/api/settings",
+        json={"default_vat_rate": "20.00"},
+    )
+    assert settings_response.status_code == 200
+
+    update_response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"amount_before_vat": "2000.00"},
+    )
+    assert update_response.status_code == 200
+    payload = update_response.json()
+    assert payload["vat_rate"] == "17.00"
+    assert payload["vat_amount"] == "340.00"
+    assert payload["total_amount"] == "2340.00"
+
+    _reset_default_vat(auth_client, "18.00")

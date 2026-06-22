@@ -65,7 +65,7 @@ export const pages = {
   },
   vatCalculator: {
     title: "מחשבון מע״מ",
-    description: "מחשבון המע״מ יתווסף בשלב מאוחר יותר.",
+    description: "חישוב סכומי מע״מ לפני מע״מ או מסכום כולל מע״מ, לפי שיעור המע״מ הפעיל.",
   },
   reports: {
     title: "דוחות חודשיים",
@@ -73,7 +73,7 @@ export const pages = {
   },
   settings: {
     title: "הגדרות",
-    description: "הגדרות המשרד יתווספו בשלב מאוחר יותר.",
+    description: "ניהול פרטי המשרד, ברירות מחדל למע״מ ומדיניות קבצים מותרים להעלאה.",
   },
   notFound: {
     title: "העמוד לא נמצא",
@@ -238,6 +238,7 @@ export const documents = {
     backToDocuments: "חזרה לרשימת מסמכים",
     editDocument: "עריכת מסמך",
     cancel: "ביטול",
+    retryLoad: "נסו שוב",
   },
   fields: {
     documentName: "שם המסמך",
@@ -259,6 +260,14 @@ export const documents = {
     infoSection: "פרטי המסמך",
     fileSection: "בחירת קובץ",
     selectClient: "בחרו לקוח",
+    previewSection: "חישוב לפני שמירה",
+    previewEmpty: "הזינו סכום לפני מע״מ ושיעור מע״מ תקינים כדי לראות חישוב.",
+    previewNote: "החישוב המוצג הוא לצפייה בלבד. הסכומים הסופיים נקבעים במערכת בעת השמירה.",
+    vatPolicyNotice:
+      "שינוי שיעור מע״מ ברירת המחדל משפיע על מסמכים חדשים בלבד. מסמכים קיימים שומרים את שיעור המע״מ שנשמר עליהם בעת יצירה או עדכון.",
+    createVatHint: "שיעור המע״מ נטען מהגדרות המשרד. ניתן לשנותו למסמך זה לפני השמירה.",
+    editVatHint: "מוצג שיעור המע״מ השמור על המסמך. שינוי בהגדרות המשרד לא משנה אותו אוטומטית.",
+    settingsLink: "הגדרות המשרד",
   },
   list: {
     searchLabel: "חיפוש מסמכים",
@@ -299,6 +308,7 @@ export const documents = {
   errors: {
     loadFailed: "לא ניתן לטעון את רשימת המסמכים.",
     loadDocumentFailed: "לא ניתן לטעון את פרטי המסמך.",
+    loadUploadPageFailed: "לא ניתן לטעון את הגדרות המשרד הנדרשות להעלאת מסמך.",
     saveFailed: "לא ניתן לשמור את המסמך.",
     uploadFailed: "לא ניתן להעלות את המסמך.",
     downloadFailed: "לא ניתן להוריד את הקובץ.",
@@ -445,4 +455,77 @@ export const dashboard = {
     "נובמבר",
     "דצמבר",
   ],
+};
+
+export const settings = {
+  sections: {
+    identity: "זהות המשרד",
+    vatCurrency: "מע״מ ומטבע",
+    files: "קבצים מותרים להעלאה",
+  },
+  fields: {
+    accountantName: "שם רואה החשבון",
+    officeName: "שם המשרד",
+    defaultVatRate: "שיעור מע״מ ברירת מחדל (%)",
+    defaultCurrency: "מטבע ברירת מחדל",
+    defaultCurrencyHint: "מוצג לקריאה בלבד. המערכת מציגה סכומים בשקלים חדשים (₪).",
+    allowedExtensions: "סוגי קבצים מותרים",
+  },
+  extensionsDescription:
+    "ניתן לבחור רק מתוך סוגי הקבצים המאושרים על ידי המערכת. טפסי העלאה משתמשים במדיניות הפעילה בפועל.",
+  vatPolicyNotice:
+    "שינוי שיעור מע״מ ברירת המחדל משפיע על מסמכים חדשים בלבד. מסמכים קיימים שומרים את שיעור המע״מ שנשמר עליהם בעת יצירה או עדכון.",
+  actions: {
+    save: "שמירת הגדרות",
+    cancel: "ביטול",
+    retryLoad: "נסו שוב",
+  },
+  validation: {
+    accountantNameRequired: "שם רואה החשבון הוא שדה חובה.",
+    officeNameRequired: "שם המשרד הוא שדה חובה.",
+    extensionsRequired: "יש לבחור לפחות סוג קובץ אחד מותר.",
+  },
+  messages: {
+    saveSuccess: "ההגדרות נשמרו בהצלחה.",
+    legacyExtensionsWarning:
+      "קיימות הגדרות קובץ לא נתמכות או שאין סוגי קבצים פעילים להעלאה. בחרו לפחות סוג קובץ מאובטח אחד ושמרו מחדש.",
+    effectiveExtensionsTemplate: "סוגים פעילים להעלאה: {extensions}",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את הגדרות המשרד.",
+    saveFailed: "לא ניתן לשמור את ההגדרות.",
+  },
+};
+
+export const vatCalculator = {
+  modes: {
+    fromBeforeVat: "סכום לפני מע״מ",
+    fromTotalIncludingVat: "סה״כ כולל מע״מ",
+  },
+  fields: {
+    modeLegend: "מצב חישוב",
+    amountBeforeVat: "סכום לפני מע״מ",
+    totalIncludingVat: "סה״כ כולל מע״מ",
+    vatRate: "שיעור מע״מ (%)",
+    vatRateHint: "ברירת המחדל מהגדרות המשרד: {rate}%. ניתן לשנות לחישוב זה.",
+  },
+  formulaHint: "סכום מע״מ = סכום לפני מע״מ × שיעור מע״מ ÷ 100",
+  results: {
+    title: "תוצאות החישוב",
+    amountBeforeVat: "סכום לפני מע״מ",
+    vatAmount: "סכום מע״מ",
+    totalAmount: "סה״כ כולל מע״מ",
+    loading: "מחשב...",
+    empty: "הזינו נתונים ולחצו על \"חישוב\" כדי לראות תוצאות.",
+  },
+  actions: {
+    calculate: "חישוב",
+    reset: "איפוס",
+    settingsLink: "הגדרות המשרד",
+    retryLoad: "נסו שוב",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את ברירת המחדל של שיעור המע״מ.",
+    calculateFailed: "לא ניתן לבצע את החישוב.",
+  },
 };

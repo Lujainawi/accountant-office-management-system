@@ -10,7 +10,7 @@ import { listClients } from "../api/clients";
 import { ApiError } from "../api/client";
 import { getDocument, updateDocument } from "../api/documents";
 import { documents as documentsText, pages, ui } from "../content/he";
-import { buildUpdatePayload, documentToFormValues } from "../utils/documentForm";
+import { buildUpdatePayload, documentToFormValues, hasDocumentChanges } from "../utils/documentForm";
 import { getDocumentErrorMessage } from "../utils/documentErrors";
 
 export default function EditDocumentPage() {
@@ -55,11 +55,13 @@ export default function EditDocumentPage() {
 
   async function handleSubmit(values) {
     setServerError("");
-    const payload = buildUpdatePayload(values, document);
-    if (Object.keys(payload).length === 0) {
+    const initialValues = documentToFormValues(document);
+    if (!hasDocumentChanges(values, initialValues)) {
       setServerError(documentsText.validation.noChanges);
       return;
     }
+
+    const payload = buildUpdatePayload(values);
 
     try {
       const updated = await updateDocument(id, payload);
