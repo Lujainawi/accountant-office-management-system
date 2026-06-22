@@ -36,10 +36,12 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
+    from app.crud.integration_status import seed_integration_statuses_if_missing
     from app.crud.office_settings import seed_office_settings_if_missing
     from app.crud.user import seed_dev_admin_if_missing
     from app.models.client import Client  # noqa: F401
     from app.models.document import Document  # noqa: F401
+    from app.models.integration_status import IntegrationStatus  # noqa: F401
     from app.models.office_settings import OfficeSettings  # noqa: F401
     from app.models.payment import Payment  # noqa: F401
     from app.models.task import Task  # noqa: F401
@@ -51,5 +53,6 @@ def init_db() -> None:
     try:
         seed_office_settings_if_missing(db)
         seed_dev_admin_if_missing(db)
+        seed_integration_statuses_if_missing(db)
     finally:
         db.close()

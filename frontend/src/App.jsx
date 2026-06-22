@@ -19,6 +19,13 @@ import TasksPage from "./pages/TasksPage";
 import VatCalculatorPage from "./pages/VatCalculatorPage";
 import MonthlyReportsPage from "./pages/MonthlyReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import FutureModulesPage from "./pages/FutureModulesPage";
+import EmailPreviewPage from "./pages/integrations/EmailPreviewPage";
+import OcrMockPage from "./pages/integrations/OcrMockPage";
+import TaxAuthorityPage from "./pages/integrations/TaxAuthorityPage";
+import DigitalSignaturePage from "./pages/integrations/DigitalSignaturePage";
+import OnlinePaymentsMockPage from "./pages/integrations/OnlinePaymentsMockPage";
+import AiAssistantPage from "./pages/integrations/AiAssistantPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -44,6 +51,13 @@ export default function App() {
           <Route path="vat-calculator" element={<VatCalculatorPage />} />
           <Route path="reports" element={<MonthlyReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="future-modules" element={<FutureModulesPage />} />
+          <Route path="future-modules/email" element={<EmailPreviewPage />} />
+          <Route path="future-modules/ocr" element={<OcrMockPage />} />
+          <Route path="future-modules/tax-authority" element={<TaxAuthorityPage />} />
+          <Route path="future-modules/digital-signature" element={<DigitalSignaturePage />} />
+          <Route path="future-modules/online-payments" element={<OnlinePaymentsMockPage />} />
+          <Route path="future-modules/ai-assistant" element={<AiAssistantPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>

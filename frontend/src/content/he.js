@@ -8,6 +8,7 @@ export const navItems = [
   { to: "/vat-calculator", label: "מחשבון מע״מ" },
   { to: "/reports", label: "דוחות חודשיים" },
   { to: "/settings", label: "הגדרות" },
+  { to: "/future-modules", label: "מודולים עתידיים" },
 ];
 
 export const pages = {
@@ -82,6 +83,34 @@ export const pages = {
   settings: {
     title: "הגדרות",
     description: "ניהול פרטי המשרד, ברירות מחדל למע״מ ומדיניות קבצים מותרים להעלאה.",
+  },
+  futureModules: {
+    title: "מודולים עתידיים",
+    description: "סקירת אינטגרציות מתוכננות ומצבי הדגמה — ללא חיבור לשירותים חיצוניים.",
+  },
+  emailPreview: {
+    title: "תצוגה מקדימה לדוא״ל — מצב הדגמה",
+    description: "הצגת טקסט דוגמה לצורך הדגמה בלבד. לא נשלח דוא״ל.",
+  },
+  ocrMock: {
+    title: "קורא חשבוניות OCR — בקרוב",
+    description: "חילוץ נתוני דוגמה ממסמכי דוגמה — ללא העלאה או עיבוד קובץ אמיתי.",
+  },
+  taxAuthority: {
+    title: "אינטגרציה עם רשות המסים — מתוכנן",
+    description: "תהליך עבודה מתוכנן וסטטוס הדגמה — לא כלי דיווח מס רשמי.",
+  },
+  digitalSignature: {
+    title: "חתימה דיגיטלית — מתוכנן",
+    description: "סטטוסי חתימה לדוגמה בלבד — ללא חתימה משפטית או חיבור לספק.",
+  },
+  onlinePaymentsMock: {
+    title: "תשלומים מקוונים — מצב הדגמה",
+    description: "רעיון עתידי לגבייה מקוונת — ללא סליקה או כרטיסי אשראי.",
+  },
+  aiAssistant: {
+    title: "עוזר AI — מתוכנן",
+    description: "הצעות לדוגמה בלבד — ללא שליחה למודל AI.",
   },
   notFound: {
     title: "העמוד לא נמצא",
@@ -662,5 +691,121 @@ export const vatCalculator = {
   errors: {
     loadFailed: "לא ניתן לטעון את ברירת המחדל של שיעור המע״מ.",
     calculateFailed: "לא ניתן לבצע את החישוב.",
+  },
+};
+
+export const integrations = {
+  globalDisclaimer:
+    "מודול זה מוצג לצורך הדגמה או תכנון עתידי בלבד. אין חיבור לשירות חיצוני.",
+  overviewDisclaimer:
+    "אינטגרציות אלו אינן מחוברות. הנתונים המוצגים הם מצב הדגמה או מתוכנן בלבד.",
+  cardMockNote: "לא מחובר — נתוני דוגמה / מתוכנן.",
+  sampleResultLabel: "תוצאת דוגמה — Mock Data",
+  statusLabels: {
+    planned: "מתוכנן",
+    mock_mode: "מצב הדגמה",
+    coming_soon: "בקרוב",
+    not_configured: "לא מוגדר",
+  },
+  actions: {
+    viewModule: "מעבר לעמוד המודול",
+    retry: "נסו שוב",
+    loadingSample: "טוען נתוני דוגמה...",
+  },
+  errors: {
+    loadFailed: "לא ניתן לטעון את סטטוס האינטגרציות.",
+    previewFailed: "לא ניתן להציג את תצוגה המקדימה לדוגמה.",
+    ocrFailed: "לא ניתן לטעון את נתוני החילוץ לדוגמה.",
+    aiFailed: "לא ניתן לטעון את הצעות הדוגמה.",
+  },
+  modules: {
+    email: {
+      title: "תצוגה מקדימה לדוא״ל",
+      shortDescription: "הכנת טקסט דוגמה להעתקה — ללא שליחה.",
+      bannerDescription: "בחרו תרחיש דוגמה והציגו תצוגה מקדימה לטקסט דוגמה בלבד.",
+    },
+    ocr: {
+      title: "קורא חשבוניות OCR",
+      shortDescription: "חילוץ שדות לדוגמה ממסמכי דוגמה.",
+      bannerDescription: "בחרו מסמך דוגמה והציגו תוצאת חילוץ לדוגמה.",
+    },
+    tax_authority: {
+      title: "רשות המסים",
+      shortDescription: "תהליך עבודה מתוכנן — ללא הגשה.",
+      bannerDescription: "תיאור תהליך עתידי וסטטוס הדגמה בלבד.",
+    },
+    digital_signature: {
+      title: "חתימה דיגיטלית",
+      shortDescription: "סטטוסי חתימה לדוגמה בלבד.",
+      bannerDescription: "טבלת סטטוסי דוגמה — ללא פעולת חתימה.",
+    },
+    online_payments: {
+      title: "תשלומים מקוונים",
+      shortDescription: "רעיון עתידי — ללא סליקה.",
+      bannerDescription: "הסבר על גבייה מקוונת עתידית — הרישום הפעיל הוא ידני.",
+    },
+    ai_assistant: {
+      title: "עוזר AI",
+      shortDescription: "הצעות כלליות לדוגמה בלבד.",
+      bannerDescription: "טעינת הצעות דוגמה — ללא צ׳אט וללא מודל חיצוני.",
+    },
+  },
+  email: {
+    presetSectionTitle: "בחירת תרחיש דוגמה",
+    presetSectionDescription: "התצוגה המקדימה מבוססת על טקסט fictitious בלבד.",
+    presetLabel: "תרחיש דוגמה",
+    generatePreview: "הצגת תצוגה מקדימה לדוגמה",
+    copySample: "העתקת טקסט דוגמה",
+    copySuccess: "טקסט הדוגמה הועתק ללוח — לא נשלח דוא״ל.",
+    copyFallback: "לא ניתן להעתיק אוטומטית. העתיקו את הטקסט ידנית.",
+    subjectLabel: "נושא (דוגמה)",
+    noSendNotice: "לא נשלח דוא״ל — אין שליחה, אין SMTP, ואין שמירת טיוטות.",
+    presets: [
+      { id: "demo_client_followup", label: "דוגמה — בקשה להשלמת מסמכים" },
+      { id: "demo_document_request", label: "דוגמה — תזכורת לקבלת קבלות" },
+    ],
+  },
+  ocr: {
+    presetSectionTitle: "בחירת מסמך דוגמה",
+    presetSectionDescription: "התוצאה היא חילוץ לדוגמה מנתונים קבועים.",
+    presetLabel: "מסמך דוגמה",
+    simulateExtraction: "הצגת חילוץ לדוגמה",
+    noFileNotice: "זהו מסמך דוגמה בלבד. לא מועלה ולא מעובד קובץ אמיתי.",
+    fields: {
+      vendorName: "שם ספק (דוגמה)",
+      documentName: "שם מסמך (דוגמה)",
+      documentDate: "תאריך מסמך (דוגמה)",
+      amountBeforeVat: "לפני מע״מ (דוגמה)",
+      vatRate: "שיעור מע״מ (דוגמה)",
+      vatAmount: "מע״מ (דוגמה)",
+      totalAmount: "סה״כ (דוגמה)",
+    },
+    presets: [
+      { id: "demo_invoice_1", label: "חשבונית דוגמה — מאי 2026" },
+      { id: "demo_invoice_2", label: "דוח דוגמה — אפריל 2026" },
+    ],
+  },
+  taxAuthority: {
+    notOfficialNotice: "אינו כלי דיווח מס רשמי — ללא חיבור לרשות המסים.",
+    workflowTitle: "תהליך עבודה מתוכנן (דוגמה)",
+    workflowDescription: "שלבים עתידיים להמחשה בלבד — אין הגשה או אימות.",
+  },
+  digitalSignature: {
+    sampleTableTitle: "סטטוסי חתימה לדוגמה",
+    columns: {
+      document: "מסמך (דוגמה)",
+      status: "סטטוס הדגמה",
+      note: "הערה",
+    },
+  },
+  onlinePayments: {
+    manualTrackingNotice:
+      "רישום תשלומים ידני הוא התכונה הפעילה במערכת. עמוד זה מציג רעיון עתידי בלבד.",
+    manualLinkLabel: "לרישום תשלומים ידני דרך פרטי לקוח",
+  },
+  ai: {
+    suggestionsTitle: "הצעות לדוגמה",
+    suggestionsDescription: "הצעות כלליות לדוגמה — ללא נתונים חיים מהמערכת.",
+    loadSuggestions: "טעינת נתוני דוגמה",
   },
 };
