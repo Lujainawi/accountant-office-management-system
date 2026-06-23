@@ -6,13 +6,15 @@
 }
 
 .page-header__title {
-  font-size: 1.75rem;
+  font-size: var(--font-size-page-title);
   font-weight: 700;
+  line-height: var(--line-height-heading);
   color: var(--color-text);
 }
 
 .page-header__description {
   color: var(--color-text-muted);
+  font-size: var(--font-size-body);
   max-width: 60ch;
 }
 
@@ -151,8 +153,13 @@
 }
 
 .topbar__user {
-  color: var(--color-text-muted);
+  color: var(--color-text);
+  font-size: var(--font-size-meta);
   font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-neutral-bg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
 }
 
 .login-form {
@@ -186,9 +193,9 @@
   color: var(--color-text);
 }
 
-.form-field__input:focus {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
+.form-field__input:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .form-field__textarea {
@@ -406,10 +413,18 @@
 .metric-card__value {
   font-size: 1.5rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-summary__status-value,
+.client-workspace-summary__status-value,
+.monthly-report-status__value {
+  font-variant-numeric: tabular-nums;
 }
 
 .money-display {
   unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
 }
 
 .client-workspace-header {
@@ -531,9 +546,9 @@
   resize: vertical;
 }
 
-.client-notes-panel__textarea:focus {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+.client-notes-panel__textarea:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .client-notes-panel__actions {

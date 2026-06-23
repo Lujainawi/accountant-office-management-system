@@ -15,8 +15,8 @@ body,
 body {
   margin: 0;
   font-family: var(--font-family);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   color: var(--color-text);
   background: var(--color-bg);
   text-rendering: optimizeLegibility;
@@ -42,8 +42,8 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .sr-only {

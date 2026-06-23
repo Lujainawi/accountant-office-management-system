@@ -1,12 +1,16 @@
 :root {
   --color-bg: #f4f6f8;
   --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
   --color-nav: #1e293b;
+  --color-nav-surface: rgb(255 255 255 / 0.08);
   --color-nav-text: #e2e8f0;
   --color-nav-text-muted: #94a3b8;
+  --color-nav-active-text: #f8fafc;
   --color-text: #0f172a;
   --color-text-muted: #64748b;
   --color-border: #e2e8f0;
+  --color-border-subtle: #f1f5f9;
   --color-accent: #0d9488;
   --color-accent-hover: #0f766e;
   --color-accent-soft: #ccfbf1;
@@ -16,9 +20,18 @@
   --color-warning-bg: #fef3c7;
   --color-danger: #b91c1c;
   --color-danger-bg: #fee2e2;
+  --color-info: #1e40af;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
   --color-neutral: #475569;
   --color-neutral-bg: #f1f5f9;
-  --color-focus: #2563eb;
+  --color-muted: #475569;
+  --color-muted-bg: #f1f5f9;
+  --color-muted-border: #e2e8f0;
+  --color-focus: #0d9488;
+
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -31,11 +44,19 @@
   --radius-md: 10px;
   --radius-lg: 14px;
 
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
   --shadow-md: 0 8px 24px rgb(15 23 42 / 0.08);
 
   --font-family: "Segoe UI", Tahoma, "Helvetica Neue", Arial, sans-serif;
+  --font-size-page-title: 1.75rem;
+  --font-size-section-title: 1.125rem;
+  --font-size-body: 1rem;
+  --font-size-meta: 0.875rem;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.3;
+
   --sidebar-width: 260px;
   --topbar-height: 64px;
   --content-max-width: 1200px;
+  --shell-nav-indicator-width: 3px;
 }
