@@ -1,7 +1,9 @@
+import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.database import init_db
@@ -17,6 +19,10 @@ from app.routes.settings import router as settings_router
 from app.routes.tasks import router as tasks_router
 from app.routes.vat import router as vat_router
 
+logger = logging.getLogger(__name__)
+
+UNEXPECTED_ERROR_MESSAGE = "אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר."
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,6 +31,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Accountant Office Management API", lifespan=lifespan)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.exception("Unhandled server error on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": UNEXPECTED_ERROR_MESSAGE},
+    )
+
 
 app.add_middleware(
     CORSMiddleware,

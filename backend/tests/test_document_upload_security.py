@@ -11,6 +11,67 @@ from app.utils.file_validation import (
 from tests.conftest import make_pdf_bytes, make_png_bytes, upload_document
 
 
+def _minimal_upload_form(client_id, **overrides):
+    data = {
+        "client_id": str(client_id),
+        "document_name": "מסמך בדיקה",
+        "document_type": "invoice",
+        "document_date": "2026-05-15",
+        "amount_before_vat": "100.00",
+        "status": "new",
+        "notes": "",
+    }
+    data.update(overrides)
+    return data
+
+
+def _pdf_upload_files():
+    return {"file": ("demo.pdf", make_pdf_bytes(), "application/pdf")}
+
+
+def test_upload_missing_client_id_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    data = _minimal_upload_form(client_id)
+    del data["client_id"]
+    response = auth_client.post("/api/documents", files=_pdf_upload_files(), data=data)
+    assert response.status_code == 422
+    assert response.status_code != 500
+
+
+def test_upload_non_integer_client_id_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    data = _minimal_upload_form(client_id)
+    data["client_id"] = "not-an-id"
+    response = auth_client.post("/api/documents", files=_pdf_upload_files(), data=data)
+    assert response.status_code == 422
+    assert response.status_code != 500
+
+
+def test_upload_invalid_document_date_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    data = _minimal_upload_form(client_id, document_date="not-a-date")
+    response = auth_client.post("/api/documents", files=_pdf_upload_files(), data=data)
+    assert response.status_code == 422
+    assert response.status_code != 500
+
+
+def test_upload_missing_document_name_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    data = _minimal_upload_form(client_id)
+    del data["document_name"]
+    response = auth_client.post("/api/documents", files=_pdf_upload_files(), data=data)
+    assert response.status_code == 422
+    assert response.status_code != 500
+
+
+def test_upload_missing_file_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    data = _minimal_upload_form(client_id)
+    response = auth_client.post("/api/documents", data=data)
+    assert response.status_code in {400, 422}
+    assert response.status_code != 500
+
+
 def test_upload_policy_route_before_dynamic_id(auth_client):
     response = auth_client.get("/api/documents/upload-policy")
     assert response.status_code == 200

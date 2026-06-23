@@ -48,6 +48,82 @@ DocumentTypeQuery = Literal["invoice", "receipt", "report", "bank_document", "ot
 DocumentStatusQuery = Literal["new", "in_progress", "completed", "missing_information"]
 
 MISSING_FILE_MESSAGE = "קובץ המסמך לא נמצא במערכת."
+MISSING_CLIENT_ID_MESSAGE = "יש לספק מזהה לקוח."
+INVALID_CLIENT_ID_MESSAGE = "מזהה לקוח אינו תקין."
+MISSING_DOCUMENT_NAME_MESSAGE = "שם המסמך הוא שדה חובה."
+MISSING_DOCUMENT_TYPE_MESSAGE = "סוג מסמך הוא שדה חובה."
+MISSING_DOCUMENT_DATE_MESSAGE = "תאריך מסמך הוא שדה חובה."
+INVALID_DOCUMENT_DATE_MESSAGE = "תאריך מסמך אינו תקין."
+MISSING_DOCUMENT_STATUS_MESSAGE = "סטטוס מסמך הוא שדה חובה."
+
+
+def _require_form_text(form, form_keys: set[str], field_name: str, message: str) -> str:
+    if field_name not in form_keys:
+        raise ValueError(message)
+    raw = form.get(field_name)
+    if raw is None:
+        raise ValueError(message)
+    return str(raw)
+
+
+def _parse_multipart_client_id(form, form_keys: set[str]) -> int:
+    if "client_id" not in form_keys:
+        raise ValueError(MISSING_CLIENT_ID_MESSAGE)
+    raw = form.get("client_id")
+    if raw is None or not str(raw).strip():
+        raise ValueError(MISSING_CLIENT_ID_MESSAGE)
+    try:
+        return int(str(raw).strip())
+    except (TypeError, ValueError):
+        raise ValueError(INVALID_CLIENT_ID_MESSAGE) from None
+
+
+def _parse_multipart_document_date(form, form_keys: set[str]) -> date:
+    if "document_date" not in form_keys:
+        raise ValueError(MISSING_DOCUMENT_DATE_MESSAGE)
+    raw = form.get("document_date")
+    if raw is None or not str(raw).strip():
+        raise ValueError(MISSING_DOCUMENT_DATE_MESSAGE)
+    try:
+        return date.fromisoformat(str(raw).strip())
+    except ValueError:
+        raise ValueError(INVALID_DOCUMENT_DATE_MESSAGE) from None
+
+
+def _build_document_create_from_form(
+    form,
+    form_keys: set[str],
+    *,
+    amount,
+    parsed_vat_rate,
+) -> DocumentCreate:
+    client_id = _parse_multipart_client_id(form, form_keys)
+    document_name = _require_form_text(
+        form, form_keys, "document_name", MISSING_DOCUMENT_NAME_MESSAGE
+    )
+    document_type = _require_form_text(
+        form, form_keys, "document_type", MISSING_DOCUMENT_TYPE_MESSAGE
+    )
+    document_date = _parse_multipart_document_date(form, form_keys)
+    status_value = _require_form_text(
+        form, form_keys, "status", MISSING_DOCUMENT_STATUS_MESSAGE
+    )
+    notes_raw = form.get("notes") if "notes" in form_keys else None
+    notes = str(notes_raw) if notes_raw not in (None, "") else None
+
+    create_kwargs = {
+        "client_id": client_id,
+        "document_name": document_name,
+        "document_type": document_type,
+        "document_date": document_date,
+        "amount_before_vat": amount,
+        "status": status_value,
+        "notes": notes,
+    }
+    if parsed_vat_rate is not OMITTED:
+        create_kwargs["vat_rate"] = parsed_vat_rate
+
+    return DocumentCreate(**create_kwargs)
 
 
 def _get_document_or_404(db: Session, document_id: int):
@@ -147,23 +223,16 @@ async def post_document(
         parsed_vat_rate = parse_multipart_vat_rate(
             form.get("vat_rate"), key_present="vat_rate" in form_keys
         )
+        document_data = _build_document_create_from_form(
+            form,
+            form_keys,
+            amount=amount,
+            parsed_vat_rate=parsed_vat_rate,
+        )
     except MoneyValidationError as exc:
         raise _validation_error(exc) from exc
-
-    create_kwargs = {
-        "client_id": int(form["client_id"]),
-        "document_name": str(form["document_name"]),
-        "document_type": str(form["document_type"]),
-        "document_date": date.fromisoformat(str(form["document_date"])),
-        "amount_before_vat": amount,
-        "status": str(form["status"]),
-        "notes": str(form["notes"]) if form.get("notes") not in (None, "") else None,
-    }
-    if parsed_vat_rate is not OMITTED:
-        create_kwargs["vat_rate"] = parsed_vat_rate
-
-    try:
-        document_data = DocumentCreate(**create_kwargs)
+    except ValueError as exc:
+        raise _validation_error(exc) from exc
     except ValidationError as exc:
         raise _format_validation_error(exc) from exc
 

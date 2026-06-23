@@ -112,6 +112,39 @@ def test_settings_partial_update_without_extensions(auth_client):
     assert response.json()["office_name"] == "שם משרד חדש"
 
 
+def test_settings_rejects_empty_update_payload(auth_client):
+    response = auth_client.put("/api/settings", json={})
+    assert response.status_code == 422
+
+
+def test_settings_rejects_whitespace_accountant_name(auth_client):
+    response = auth_client.put(
+        "/api/settings",
+        json={"accountant_name": "   "},
+    )
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    if isinstance(detail, list):
+        messages = [item.get("msg", "") for item in detail if isinstance(item, dict)]
+        assert any("ריק" in message for message in messages)
+    else:
+        assert "ריק" in detail
+
+
+def test_settings_rejects_whitespace_office_name(auth_client):
+    response = auth_client.put(
+        "/api/settings",
+        json={"office_name": "   "},
+    )
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    if isinstance(detail, list):
+        messages = [item.get("msg", "") for item in detail if isinstance(item, dict)]
+        assert any("ריק" in message for message in messages)
+    else:
+        assert "ריק" in detail
+
+
 def test_settings_legacy_invalid_extensions_are_transparent(auth_client, test_app):
     db = test_app["session_factory"]()
     try:

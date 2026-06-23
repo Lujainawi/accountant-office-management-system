@@ -23,6 +23,8 @@ DEFAULT_CURRENCY = "ILS"
 
 INVALID_EXTENSION_MESSAGE = "סוג קובץ אינו נתמך בהגדרות המשרד."
 EXTENSIONS_REQUIRED_MESSAGE = "יש לבחור לפחות סוג קובץ אחד מותר."
+NO_UPDATES_MESSAGE = "יש לספק לפחות שדה אחד לעדכון."
+EMPTY_TEXT_MESSAGE = "הערך לא יכול להיות ריק."
 
 
 def normalize_file_extensions(extensions: list[str]) -> list[str]:
@@ -65,11 +67,17 @@ class OfficeSettingsUpdate(BaseModel):
     default_currency: str | None = Field(default=None, min_length=3, max_length=3)
     allowed_file_extensions: list[str] | None = None
 
+    @model_validator(mode="after")
+    def validate_has_updates(self) -> "OfficeSettingsUpdate":
+        if not self.model_fields_set:
+            raise ValueError(NO_UPDATES_MESSAGE)
+        return self
+
     @field_validator("accountant_name", "office_name")
     @classmethod
     def validate_non_empty_text(cls, value: str | None) -> str | None:
         if value is not None and not value.strip():
-            raise ValueError("Value must not be empty.")
+            raise ValueError(EMPTY_TEXT_MESSAGE)
         return value.strip() if value is not None else None
 
     @field_validator("default_currency")
