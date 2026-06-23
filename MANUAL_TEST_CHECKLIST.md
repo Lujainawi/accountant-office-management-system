@@ -56,10 +56,10 @@ Use this checklist after every development phase. Do not continue to the next ph
 ## 5. Authentication
 
 - [ ] Development admin/accountant user exists safely.
-- [ ] Login works with correct email/password.
+- [x] Login works with correct email/password. *(Phase 16 smoke — 2026-06-23)*
 - [ ] Invalid login shows a safe, clear error.
-- [ ] Logout works.
-- [ ] Protected pages require login.
+- [x] Logout works. *(Phase 16 smoke — 2026-06-23)*
+- [x] Protected pages require login. *(Phase 16 smoke — logout and protected-page redirect)*
 - [ ] Protected API routes return unauthorized for an unauthenticated request.
 - [ ] Passwords are hashed.
 - [ ] Plain text passwords are not stored or returned by the API.
@@ -68,12 +68,12 @@ Use this checklist after every development phase. Do not continue to the next ph
 
 ## 6. Clients
 
-- [ ] Add client works.
-- [ ] Client list loads.
+- [x] Add client works. *(Phase 16 smoke — 2026-06-23)*
+- [x] Client list loads. *(Phase 16 smoke — 2026-06-23)*
 - [ ] View one client works.
-- [ ] Edit client works.
-- [ ] Delete/archive flow requires confirmation.
-- [ ] Search by name works.
+- [x] Edit client works. *(Phase 16 smoke — update test client)*
+- [x] Delete/archive flow requires confirmation. *(Phase 16 smoke — destructive-action confirmations)*
+- [x] Search by name works. *(Phase 16 smoke — search test client)*
 - [ ] Search by business name, phone, email, and business ID works.
 - [ ] Filter by status works.
 - [ ] Filter by client type works.
@@ -95,7 +95,7 @@ Use this checklist after every development phase. Do not continue to the next ph
 
 ## 8. Documents and Upload Safety
 
-- [ ] Upload document works with a permitted demo file.
+- [x] Upload document works with a permitted demo file. *(Phase 16 smoke — 2026-06-23)*
 - [ ] Allowed types work: PDF, PNG, JPG, JPEG, DOCX, XLSX.
 - [ ] Unsupported extension is blocked.
 - [ ] File with a fake/incorrect MIME type is blocked where detection is available.
@@ -103,11 +103,11 @@ Use this checklist after every development phase. Do not continue to the next ph
 - [ ] Executable/script/archive files are blocked.
 - [ ] Stored filename is server-generated and not equal to an untrusted original name.
 - [ ] File metadata is saved in SQLite.
-- [ ] Server file path is not exposed in UI/API response.
-- [ ] Download works for authenticated user.
+- [ ] Server file path is not exposed in UI/API response. *(Phase 16 automated regression only — not manually verified in browser smoke; see §18)*
+- [x] Download works for authenticated user. *(Phase 16 smoke — 2026-06-23)*
 - [ ] Unauthenticated user cannot download a document.
 - [ ] Edit metadata works.
-- [ ] Delete/archive flow requires confirmation.
+- [x] Delete/archive flow requires confirmation. *(Phase 16 smoke — destructive-action confirmations)*
 - [ ] Filter by client works.
 - [ ] Filter by document month/year works.
 - [ ] Filter by status works.
@@ -152,7 +152,7 @@ Use this checklist after every development phase. Do not continue to the next ph
 
 ## 12. Dashboard
 
-- [ ] Dashboard loads after login.
+- [x] Dashboard loads after login. *(Phase 16 smoke — 2026-06-23)*
 - [ ] Total clients count is real.
 - [ ] Active clients count is real.
 - [ ] Document counts by status are real.
@@ -187,7 +187,7 @@ Use this checklist after every development phase. Do not continue to the next ph
 
 ## 15. Future / Mock Modules
 
-- [ ] Future Modules page exists.
+- [x] Future Modules page exists. *(Phase 16 smoke — mock label check)*
 - [ ] Email module is marked Mock Mode / Not Configured.
 - [ ] OCR module is marked Coming Soon / Mock Mode.
 - [ ] Tax Authority module is marked Planned.
@@ -197,7 +197,7 @@ Use this checklist after every development phase. Do not continue to the next ph
 - [ ] Mock outputs are clearly identified as example/sample data.
 - [ ] No real external API is called.
 - [ ] No real API key is used.
-- [ ] Mock features are not presented as fully working.
+- [x] Mock features are not presented as fully working. *(Phase 16 smoke — future module mock label)*
 
 ## 16. Final Security and Privacy Check
 
@@ -206,12 +206,12 @@ Use this checklist after every development phase. Do not continue to the next ph
 - [ ] Database files are not committed.
 - [ ] Uploads contain no real client documents.
 - [ ] Passwords are not stored as plain text.
-- [ ] Tokens/secrets are not logged or rendered in UI.
+- [ ] Tokens/secrets are not logged or rendered in UI. *(Phase 16 automated regression only — not manually verified in browser smoke; see §18)*
 - [ ] No real payments are processed.
 - [ ] No real government/tax authority connection exists.
 - [ ] No real AI processing of client documents exists.
 - [ ] Downloads require authentication.
-- [ ] API errors do not expose internal paths, raw exceptions, secrets, or hashes.
+- [ ] API errors do not expose internal paths, raw exceptions, secrets, or hashes. *(Phase 16 automated regression only — not manually verified in browser smoke; see §18)*
 - [ ] Screenshots and demo records are fictional.
 
 ## 17. Final Portfolio Check
@@ -221,7 +221,44 @@ Use this checklist after every development phase. Do not continue to the next ph
 - [ ] README separates working features from mock/planned features.
 - [ ] Documentation matches the implementation.
 - [ ] Screenshots use only demo data.
-- [ ] Core automated tests pass.
+- [x] Core automated tests pass. *(Phase 16 — focused: 182 passed; full backend suite: 251 passed; frontend build: passed)*
 - [ ] Manual checklist is completed for the final version.
 - [ ] Git history uses meaningful phase commits.
 - [ ] Known limitations are documented honestly.
+
+## 18. Phase 16 — Automated Test Expansion Verification
+
+**Recorded:** 2026-06-23  
+**Git baseline:** `7511191 Harden validation and error handling`
+
+### Automated verification (passed)
+
+- Focused Phase 16 tests: **182 passed**
+- Full backend suite: **251 passed**
+- Frontend build: **passed**
+
+The following broad security assertions were **not** fully exercised in the Phase 16 browser smoke test, but have **automated regression evidence** (for example in `backend/tests/test_error_handling.py`, `backend/tests/test_documents.py`, `backend/tests/test_document_upload_security.py`, and related suites):
+
+- Server file path is not exposed in UI/API response
+- Tokens/secrets are not logged or rendered in UI
+- API errors do not expose internal paths, raw exceptions, secrets, or hashes
+
+These remain **unchecked** in sections 8 and 16 above until a dedicated manual review confirms them.
+
+### Manual browser smoke test (passed)
+
+Scope was intentionally narrow — regression confidence after test-only Phase 16 changes, not a full MVP checklist walkthrough.
+
+| Check | Result |
+|---|---|
+| Login and dashboard | Pass |
+| Create, search, update, and delete test client | Pass |
+| Upload, open, download, and delete test document | Pass |
+| Destructive-action confirmations | Pass |
+| Logout and protected-page redirect | Pass |
+| Future module mock label | Pass |
+| No technical errors or obvious data leakage observed in tested flows | Pass *(limited smoke observation — not a full security review)* |
+
+### Not covered in this Phase 16 smoke test
+
+The following were **not** manually re-tested in this smoke session and remain unchecked above unless marked in an earlier phase: unsupported/oversized upload rejection, unauthenticated download, settings edits, VAT calculator UI, tasks, payments, monthly reports, every individual mock module page, invalid-login UI, API-level auth checks, portfolio/documentation final review, the three broad security/path-leakage checklist items in sections 8 and 16 (automated evidence only — see above), and the remainder of sections 1–4, 7, 9–14, and 16–17.

@@ -363,3 +363,46 @@ def test_list_tasks_limit(auth_client, test_app):
     response = auth_client.get(f"/api/tasks?client_id={client_id}&limit=5")
     assert response.status_code == 200
     assert len(response.json()) == 5
+
+
+def test_get_task_by_id(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = auth_client.post(
+        "/api/tasks",
+        json=create_task_payload(client_id=client_id, title="משימה לקריאה"),
+    )
+    assert create_response.status_code == 201
+    task_id = create_response.json()["id"]
+
+    response = auth_client.get(f"/api/tasks/{task_id}")
+    assert response.status_code == 200
+    assert response.json()["id"] == task_id
+    assert response.json()["title"] == "משימה לקריאה"
+
+
+def test_get_unknown_task_returns_404(auth_client):
+    response = auth_client.get("/api/tasks/99999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "המשימה לא נמצאה."
+
+
+def test_update_task_empty_body_returns_422(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = auth_client.post(
+        "/api/tasks",
+        json=create_task_payload(client_id=client_id),
+    )
+    task_id = create_response.json()["id"]
+
+    response = auth_client.put(f"/api/tasks/{task_id}", json={})
+    assert response.status_code == 422
+
+
+def test_list_tasks_invalid_status_filter_returns_422(auth_client):
+    response = auth_client.get("/api/tasks", params={"status": "invalid_status"})
+    assert response.status_code == 422
+
+
+def test_list_tasks_invalid_priority_filter_returns_422(auth_client):
+    response = auth_client.get("/api/tasks", params={"priority": "invalid_priority"})
+    assert response.status_code == 422

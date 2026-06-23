@@ -285,3 +285,27 @@ def test_vat_calculate_half_up_vector(auth_client):
     payload = response.json()
     assert payload["vat_amount"] == "0.01"
     assert payload["total_amount"] == "0.02"
+
+
+def test_vat_calculate_rejects_negative_vat_rate(auth_client):
+    response = auth_client.post(
+        "/api/vat/calculate",
+        json={
+            "mode": "from_before_vat",
+            "amount": "100.00",
+            "vat_rate": "-1.00",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_vat_calculate_rejects_invalid_mode(auth_client):
+    response = auth_client.post(
+        "/api/vat/calculate",
+        json={
+            "mode": "invalid_mode",
+            "amount": "100.00",
+            "vat_rate": "18.00",
+        },
+    )
+    assert response.status_code == 422

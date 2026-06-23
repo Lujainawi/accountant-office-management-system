@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from app.models.client import Client
 from app.models.document import Document
+from app.models.payment import Payment
 from app.models.task import Task
 from app.services.monthly_report import get_monthly_report
 from tests.conftest import upload_document
@@ -537,3 +538,33 @@ def test_monthly_report_money_strings_have_two_decimal_places(auth_client, test_
         for field in ("total_before_vat", "vat_total", "total_including_vat"):
             value = row[field]
             assert value == f"{Decimal(value):.2f}"
+
+
+def test_monthly_report_does_not_mutate_database(auth_client, test_app):
+    SessionLocal = test_app["session_factory"]
+    db = SessionLocal()
+    try:
+        counts_before = {
+            "clients": db.query(Client).count(),
+            "documents": db.query(Document).count(),
+            "tasks": db.query(Task).count(),
+            "payments": db.query(Payment).count(),
+        }
+    finally:
+        db.close()
+
+    response = fetch_monthly_report(auth_client, month=6, year=2026)
+    assert response.status_code == 200
+
+    db = SessionLocal()
+    try:
+        counts_after = {
+            "clients": db.query(Client).count(),
+            "documents": db.query(Document).count(),
+            "tasks": db.query(Task).count(),
+            "payments": db.query(Payment).count(),
+        }
+    finally:
+        db.close()
+
+    assert counts_after == counts_before

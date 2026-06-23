@@ -601,3 +601,24 @@ def test_edit_payment_fields(auth_client, test_app):
     assert payload["payment_date"] == "2026-06-01"
     assert payload["payment_period"] == "Q2 2026"
     assert payload["notes"] == "Updated"
+
+
+def test_get_payment_by_id(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = auth_client.post(
+        "/api/payments",
+        json=create_payment_payload(client_id=client_id, amount="250.00"),
+    )
+    assert create_response.status_code == 201
+    payment_id = create_response.json()["id"]
+
+    response = auth_client.get(f"/api/payments/{payment_id}")
+    assert response.status_code == 200
+    assert response.json()["id"] == payment_id
+    assert response.json()["amount"] == "250.00"
+
+
+def test_get_unknown_payment_returns_404(auth_client):
+    response = auth_client.get("/api/payments/99999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "רשומת התשלום לא נמצאה."

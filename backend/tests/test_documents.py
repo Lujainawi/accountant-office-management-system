@@ -414,3 +414,148 @@ def test_existing_document_rate_preserved_after_settings_change(auth_client, tes
     assert payload["total_amount"] == "2340.00"
 
     _reset_default_vat(auth_client, "18.00")
+
+
+def test_get_document_by_id_after_upload(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(
+        auth_client,
+        client_id=client_id,
+        document_name="מסמך לקריאה",
+        notes="הערת בדיקה",
+    )
+    assert create_response.status_code == 201
+    document_id = create_response.json()["id"]
+
+    response = auth_client.get(f"/api/documents/{document_id}")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"] == document_id
+    assert payload["document_name"] == "מסמך לקריאה"
+    assert payload["notes"] == "הערת בדיקה"
+    assert "file_path" not in payload
+    assert "stored_filename" not in payload
+
+
+def test_get_unknown_document_returns_404(auth_client):
+    response = auth_client.get("/api/documents/99999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "המסמך לא נמצא."
+
+
+def test_update_document_metadata_persists(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(auth_client, client_id=client_id)
+    document_id = create_response.json()["id"]
+
+    update_response = auth_client.put(
+        f"/api/documents/{document_id}",
+        json={"status": "completed", "notes": "הערה מעודכנת"},
+    )
+    assert update_response.status_code == 200
+    payload = update_response.json()
+    assert payload["status"] == "completed"
+    assert payload["notes"] == "הערה מעודכנת"
+
+    reload = auth_client.get(f"/api/documents/{document_id}")
+    assert reload.json()["status"] == "completed"
+    assert reload.json()["notes"] == "הערה מעודכנת"
+
+
+def test_update_unknown_document_returns_404(auth_client):
+    response = auth_client.put(
+        "/api/documents/99999",
+        json={"notes": "לא קיים"},
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "המסמך לא נמצא."
+
+
+def test_delete_unknown_document_returns_404(auth_client):
+    response = auth_client.delete("/api/documents/99999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "המסמך לא נמצא."
+
+
+def test_upload_with_unknown_client_id_returns_422(auth_client):
+    from tests.conftest import make_pdf_bytes
+
+    files = {"file": ("demo.pdf", make_pdf_bytes(), "application/pdf")}
+    data = {
+        "client_id": "99999",
+        "document_name": "מסמך ללא לקוח",
+        "document_type": "invoice",
+        "document_date": "2026-05-15",
+        "amount_before_vat": "100.00",
+        "status": "new",
+        "notes": "",
+    }
+    response = auth_client.post("/api/documents", files=files, data=data)
+    assert response.status_code == 422
+    assert response.status_code != 500
+    assert response.json()["detail"] == "הלקוח לא נמצא."
+
+
+def test_list_documents_filter_by_status(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    for status in ("new", "completed"):
+        response = upload_document(
+            auth_client,
+            client_id=client_id,
+            document_name=f"מסמך {status}",
+            status=status,
+        )
+        assert response.status_code == 201
+
+    response = auth_client.get(f"/api/documents?client_id={client_id}&status=completed")
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 1
+    assert payload[0]["status"] == "completed"
+
+
+def test_list_documents_filter_by_month_and_year(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    uploads = [
+        ("2026-05-15", "מסמך מאי"),
+        ("2026-06-10", "מסמך יוני"),
+    ]
+    for document_date, document_name in uploads:
+        response = upload_document(
+            auth_client,
+            client_id=client_id,
+            document_name=document_name,
+            document_date=document_date,
+        )
+        assert response.status_code == 201
+
+    response = auth_client.get(
+        f"/api/documents?client_id={client_id}&month=6&year=2026"
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 1
+    assert payload[0]["document_name"] == "מסמך יוני"
+
+
+def test_list_documents_search_by_name_or_notes(auth_client, test_app):
+    client_id = test_app["seeded"]["client"].id
+    create_response = upload_document(
+        auth_client,
+        client_id=client_id,
+        document_name="חשבונית חיפוש ייחודית",
+        notes="הערה ייחודית לחיפוש",
+    )
+    assert create_response.status_code == 201
+
+    by_name = auth_client.get(
+        f"/api/documents?client_id={client_id}&q=חיפוש ייחודית"
+    )
+    assert by_name.status_code == 200
+    assert len(by_name.json()) == 1
+
+    by_notes = auth_client.get(
+        f"/api/documents?client_id={client_id}&q=ייחודית לחיפוש"
+    )
+    assert by_notes.status_code == 200
+    assert len(by_notes.json()) == 1
