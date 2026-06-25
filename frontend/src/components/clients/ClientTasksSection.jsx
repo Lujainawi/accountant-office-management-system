@@ -78,9 +78,6 @@ export default function ClientTasksSection({ clientId }) {
                 </span>
               </div>
               <div className="client-tasks-list__badges">
-                {task.priority === "urgent" ? (
-                  <StatusBadge label={tasksText.badges.urgent} tone="danger" />
-                ) : null}
                 {task.is_overdue ? (
                   <StatusBadge label={tasksText.badges.overdue} tone="danger" />
                 ) : null}

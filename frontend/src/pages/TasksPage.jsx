@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import PageHeader from "../components/PageHeader";
+import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import LoadingState from "../components/LoadingState";
 import ErrorMessage from "../components/ErrorMessage";
@@ -25,14 +26,13 @@ const ALL_STATUS_OPTIONS = [{ value: "", label: ui.all }, ...TASK_STATUS_OPTIONS
 const ALL_PRIORITY_OPTIONS = [{ value: "", label: ui.all }, ...TASK_PRIORITY_OPTIONS];
 
 function TaskIndicators({ task }) {
+  if (!task.is_overdue) {
+    return null;
+  }
+
   return (
     <div className="task-indicators">
-      {task.priority === "urgent" ? (
-        <StatusBadge label={tasksText.badges.urgent} tone="danger" />
-      ) : null}
-      {task.is_overdue ? (
-        <StatusBadge label={tasksText.badges.overdue} tone="danger" />
-      ) : null}
+      <StatusBadge label={tasksText.badges.overdue} tone="danger" />
     </div>
   );
 }
@@ -144,64 +144,77 @@ export default function TasksPage() {
         </Link>
       </div>
 
-      <div className="filter-bar">
-        <label className="filter-bar__field">
-          <span className="filter-bar__label">{tasksText.fields.clientFilter}</span>
-          <select
-            className="form-control"
-            value={clientFilter}
-            onChange={(event) => setClientFilter(event.target.value)}
-          >
-            <option value="">{ui.all}</option>
-            {clients.map((client) => (
-              <option key={client.id} value={String(client.id)}>
-                {client.client_name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="tasks-filters">
+        <div className="tasks-filters__grid">
+          <div className="filter-bar__field">
+            <label className="filter-bar__label" htmlFor="task-client-filter">
+              {tasksText.fields.clientFilter}
+            </label>
+            <select
+              id="task-client-filter"
+              className="filter-bar__select form-field__input"
+              value={clientFilter}
+              onChange={(event) => setClientFilter(event.target.value)}
+            >
+              <option value="">{ui.all}</option>
+              {clients.map((client) => (
+                <option key={client.id} value={String(client.id)}>
+                  {client.client_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label className="filter-bar__field">
-          <span className="filter-bar__label">{tasksText.fields.statusFilter}</span>
-          <select
-            className="form-control"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            {ALL_STATUS_OPTIONS.map((option) => (
-              <option key={option.value || "all"} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <div className="filter-bar__field">
+            <label className="filter-bar__label" htmlFor="task-status-filter">
+              {tasksText.fields.statusFilter}
+            </label>
+            <select
+              id="task-status-filter"
+              className="filter-bar__select form-field__input"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              {ALL_STATUS_OPTIONS.map((option) => (
+                <option key={option.value || "all"} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label className="filter-bar__field">
-          <span className="filter-bar__label">{tasksText.fields.priorityFilter}</span>
-          <select
-            className="form-control"
-            value={priorityFilter}
-            onChange={(event) => setPriorityFilter(event.target.value)}
-          >
-            {ALL_PRIORITY_OPTIONS.map((option) => (
-              <option key={option.value || "all"} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <div className="filter-bar__field">
+            <label className="filter-bar__label" htmlFor="task-priority-filter">
+              {tasksText.fields.priorityFilter}
+            </label>
+            <select
+              id="task-priority-filter"
+              className="filter-bar__select form-field__input"
+              value={priorityFilter}
+              onChange={(event) => setPriorityFilter(event.target.value)}
+            >
+              {ALL_PRIORITY_OPTIONS.map((option) => (
+                <option key={option.value || "all"} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         {hasFilters ? (
-          <SecondaryButton
-            type="button"
-            onClick={() => {
-              setClientFilter("");
-              setStatusFilter("");
-              setPriorityFilter("");
-            }}
-          >
-            {ui.resetFilters}
-          </SecondaryButton>
+          <div className="tasks-filters__actions">
+            <SecondaryButton
+              type="button"
+              onClick={() => {
+                setClientFilter("");
+                setStatusFilter("");
+                setPriorityFilter("");
+              }}
+            >
+              {ui.resetFilters}
+            </SecondaryButton>
+          </div>
         ) : null}
       </div>
 
@@ -215,8 +228,8 @@ export default function TasksPage() {
       ) : null}
 
       {!isLoading && !errorMessage && items.length > 0 ? (
-        <div className="table-scroll">
-          <table className="data-table">
+        <div className="tasks-table-wrapper">
+          <table className="tasks-table">
             <thead>
               <tr>
                 <th scope="col">{tasksText.list.columnTitle}</th>
@@ -229,40 +242,51 @@ export default function TasksPage() {
             </thead>
             <tbody>
               {items.map((task) => (
-                <tr key={task.id}>
-                  <td>
+                <tr
+                  key={task.id}
+                  className={task.is_overdue ? "tasks-table__row--overdue" : undefined}
+                >
+                  <td data-label={tasksText.list.columnTitle}>
                     <div className="task-row__title-cell">
-                      <Link to={`/tasks/${task.id}/edit`} className="data-table__link">
+                      <Link to={`/tasks/${task.id}/edit`} className="tasks-table__link">
                         {task.title}
                       </Link>
                       <TaskIndicators task={task} />
                     </div>
                   </td>
-                  <td>{clientNameById.get(task.client_id) ?? ui.notAvailable}</td>
-                  <td>{task.due_date ? <DateDisplay value={task.due_date} /> : ui.notAvailable}</td>
-                  <td>
+                  <td data-label={tasksText.list.columnClient}>
+                    {clientNameById.get(task.client_id) ?? ui.notAvailable}
+                  </td>
+                  <td data-label={tasksText.list.columnDueDate}>
+                    {task.due_date ? <DateDisplay value={task.due_date} /> : ui.notAvailable}
+                  </td>
+                  <td data-label={tasksText.list.columnPriority}>
                     <StatusBadge
                       label={getTaskPriorityLabel(task.priority)}
                       tone={getTaskPriorityTone(task.priority)}
                     />
                   </td>
-                  <td>
+                  <td data-label={tasksText.list.columnStatus}>
                     <StatusBadge
                       label={getTaskStatusLabel(task.status)}
                       tone={getTaskStatusTone(task.status)}
                     />
                   </td>
-                  <td>
-                    <div className="table-actions">
+                  <td data-label={tasksText.list.columnActions}>
+                    <div className="tasks-table__actions">
                       {task.status !== "done" ? (
-                        <SecondaryButton type="button" onClick={() => setPendingDoneTask(task)}>
+                        <PrimaryButton type="button" onClick={() => setPendingDoneTask(task)}>
                           {tasksText.actions.markDone}
-                        </SecondaryButton>
+                        </PrimaryButton>
                       ) : null}
                       <Link to={`/tasks/${task.id}/edit`} className="button button--secondary">
                         {ui.edit}
                       </Link>
-                      <SecondaryButton type="button" onClick={() => setPendingDeleteTask(task)}>
+                      <SecondaryButton
+                        type="button"
+                        className="tasks-table__delete"
+                        onClick={() => setPendingDeleteTask(task)}
+                      >
                         {tasksText.actions.deleteTask}
                       </SecondaryButton>
                     </div>
