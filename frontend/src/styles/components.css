@@ -33,12 +33,12 @@
 }
 
 .button--primary {
-  background: var(--color-accent);
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .button--primary:hover {
-  background: var(--color-accent-hover);
+  background: var(--color-primary-hover);
 }
 
 .button--secondary {
@@ -126,7 +126,7 @@
   width: 18px;
   height: 18px;
   border: 2px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -310,12 +310,13 @@
 }
 
 .clients-table__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
 
 .clients-table__link:hover {
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -901,7 +902,7 @@
 }
 
 .documents-table__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -1000,7 +1001,7 @@
 }
 
 .client-documents-list__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -1036,7 +1037,7 @@
 }
 
 .client-tasks-list__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -1082,7 +1083,7 @@
 }
 
 .client-payments-list__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -1176,12 +1177,13 @@
 }
 
 .tasks-table__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
 
 .tasks-table__link:hover {
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -1217,12 +1219,13 @@
 }
 
 .text-link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
 
 .text-link:hover {
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -1489,12 +1492,13 @@
 }
 
 .monthly-report-clients__link {
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
 
 .monthly-report-clients__link:hover {
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -1580,12 +1584,13 @@
 
 .integration-card__link {
   align-self: flex-start;
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
 
 .integration-card__link:hover {
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 
@@ -1679,7 +1684,7 @@
   height: 1.75rem;
   border-radius: 999px;
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  color: var(--color-neutral);
   font-weight: 600;
   font-size: 0.875rem;
 }

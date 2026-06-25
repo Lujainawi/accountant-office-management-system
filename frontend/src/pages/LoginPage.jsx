@@ -7,6 +7,7 @@ import LoadingState from "../components/LoadingState";
 import { ApiError } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { auth as authText, pages, ui } from "../content/he";
+import logoImage from "../assets/brand/talal-awidat-logo.png";
 
 function getSafeRedirectPath(fromParam) {
   if (fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")) {
@@ -66,6 +67,15 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-page__card">
+        <div className="login-page__brand">
+          <img
+            src={logoImage}
+            alt="לוגו המשרד — Talal Awidat C.P.A"
+            className="login-page__brand-logo"
+            width={88}
+            height={88}
+          />
+        </div>
         <PageHeader title={pages.login.title} description={pages.login.description} />
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-field">

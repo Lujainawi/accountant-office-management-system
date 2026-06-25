@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import { appTitle, navItems, ui } from "../../content/he";
+import logoImage from "../../assets/brand/talal-awidat-logo.png";
 
 export default function Sidebar({ isOpen, onClose }) {
   return (
@@ -17,7 +18,16 @@ export default function Sidebar({ isOpen, onClose }) {
         className={`sidebar ${isOpen ? "sidebar--open" : ""}`}
         aria-label={ui.mainNavigation}
       >
-        <div className="sidebar__brand">{appTitle}</div>
+        <div className="sidebar__brand">
+          <img
+            src={logoImage}
+            alt="לוגו המשרד — Talal Awidat C.P.A"
+            className="sidebar__brand-logo"
+            width={48}
+            height={48}
+          />
+          <span className="sidebar__brand-title">{appTitle}</span>
+        </div>
         <nav className="sidebar__nav">
           {navItems.map((item) => (
             <NavLink
