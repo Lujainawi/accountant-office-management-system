@@ -1,4 +1,3 @@
-\
 # Safe Demo Data
 
 ## Purpose

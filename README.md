@@ -53,7 +53,7 @@ See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for a concise overview, aut
 
 ### Prerequisites
 
-- Python 3.10 (the project was verified with Python 3.10; the Windows setup below uses `py -3.10`)
+- Python 3.12 (the project was verified with Python 3.12; the Windows setup below uses `py -3.12`)
 - Node.js 20 or newer
 - npm
 - Git
@@ -87,7 +87,7 @@ Never commit `.env`, database files, or uploaded files.
 
 ```powershell
 cd backend
-py -3.10 -m venv .venv312
+py -3.12 -m venv .venv312
 .\.venv312\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 uvicorn app.main:app --reload
@@ -186,7 +186,7 @@ accountant-office-management/
 ├── .env.example
 ├── backend/
 │   ├── app/          # FastAPI application (models, routes, services, utils)
-│   ├── uploads/      # Private local file storage (gitignored except .gitkeep)
+│   ├── uploads/      # Private local file storage (gitignored)
 │   ├── tests/        # Pytest suite
 │   └── requirements.txt
 └── frontend/

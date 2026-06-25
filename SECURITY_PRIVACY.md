@@ -74,13 +74,14 @@ __pycache__/
 .venv/
 accountant_app.db
 *.db
-backend/uploads/*
-!backend/uploads/.gitkeep
+backend/uploads/
 node_modules/
 dist/
 build/
 coverage/
 ```
+
+`backend/uploads/` is private local storage; its contents are gitignored and uploaded files must not be committed.
 
 ## 5. File Upload and Download Security
 
