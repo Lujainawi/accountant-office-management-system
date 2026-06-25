@@ -27,9 +27,9 @@ const ALL_STATUS_OPTIONS = [{ value: "", label: ui.all }, ...DOCUMENT_STATUS_OPT
 const ALL_TYPE_OPTIONS = [{ value: "", label: ui.all }, ...DOCUMENT_TYPE_OPTIONS];
 const MONTH_OPTIONS = [
   { value: "", label: ui.all },
-  ...Array.from({ length: 12 }, (_, index) => ({
+  ...documentsText.hebrewMonths.map((label, index) => ({
     value: String(index + 1),
-    label: String(index + 1),
+    label,
   })),
 ];
 
@@ -146,13 +146,14 @@ export default function DocumentsPage() {
     <>
       <PageHeader title={pages.documents.title} description={pages.documents.description} />
 
-      <div className="documents-toolbar">
-        <Link to="/documents/upload" className="button button--primary">
-          {documentsText.actions.uploadDocument}
-        </Link>
-      </div>
+      <div className="documents-list-controls">
+        <div className="documents-toolbar">
+          <Link to="/documents/upload" className="button button--primary documents-toolbar__upload">
+            {documentsText.actions.uploadDocument}
+          </Link>
+        </div>
 
-      <div className="documents-filters">
+        <div className="documents-filters">
         <SearchInput
           id="document-search"
           label={documentsText.list.searchLabel}
@@ -253,6 +254,7 @@ export default function DocumentsPage() {
         <SecondaryButton type="button" onClick={handleResetFilters}>
           {ui.resetFilters}
         </SecondaryButton>
+        </div>
       </div>
 
       {actionError ? <ErrorMessage message={actionError} /> : null}
@@ -261,6 +263,14 @@ export default function DocumentsPage() {
 
       {showEmptyState ? (
         <EmptyState title={emptyTitle} description={emptyDescription} />
+      ) : null}
+
+      {showEmptyState && !hasFilters ? (
+        <div className="documents-empty-action">
+          <Link to="/documents/upload" className="button button--primary">
+            {documentsText.actions.uploadDocument}
+          </Link>
+        </div>
       ) : null}
 
       {!isLoading && !errorMessage && documents.length > 0 ? (
@@ -272,7 +282,9 @@ export default function DocumentsPage() {
                 <th scope="col">{documentsText.list.columns.client}</th>
                 <th scope="col">{documentsText.list.columns.type}</th>
                 <th scope="col">{documentsText.list.columns.date}</th>
-                <th scope="col">{documentsText.list.columns.total}</th>
+                <th scope="col" className="documents-table__total-header">
+                  {documentsText.list.columns.total}
+                </th>
                 <th scope="col">{documentsText.list.columns.status}</th>
                 <th scope="col">{documentsText.list.columns.actions}</th>
               </tr>
@@ -294,7 +306,7 @@ export default function DocumentsPage() {
                   <td data-label={documentsText.list.columns.date}>
                     <DateDisplay value={document.document_date} />
                   </td>
-                  <td data-label={documentsText.list.columns.total}>
+                  <td data-label={documentsText.list.columns.total} className="documents-table__total">
                     <MoneyDisplay value={document.total_amount} />
                   </td>
                   <td data-label={documentsText.list.columns.status}>
@@ -305,20 +317,23 @@ export default function DocumentsPage() {
                   </td>
                   <td data-label={documentsText.list.columns.actions}>
                     <div className="documents-table__actions">
-                      <Link to={`/documents/${document.id}`} className="button button--secondary">
-                        {ui.view}
-                      </Link>
-                      <Link
-                        to={`/documents/${document.id}/edit`}
-                        className="button button--secondary"
-                      >
-                        {ui.edit}
-                      </Link>
-                      <SecondaryButton type="button" onClick={() => handleDownload(document.id)}>
-                        {documentsText.actions.downloadDocument}
-                      </SecondaryButton>
+                      <div className="documents-table__actions-group">
+                        <Link to={`/documents/${document.id}`} className="button button--secondary">
+                          {ui.view}
+                        </Link>
+                        <Link
+                          to={`/documents/${document.id}/edit`}
+                          className="button button--secondary"
+                        >
+                          {ui.edit}
+                        </Link>
+                        <SecondaryButton type="button" onClick={() => handleDownload(document.id)}>
+                          {documentsText.actions.downloadDocument}
+                        </SecondaryButton>
+                      </div>
                       <SecondaryButton
                         type="button"
+                        className="documents-table__delete"
                         onClick={() => setPendingDeleteDocument(document)}
                       >
                         {documentsText.actions.deleteDocument}

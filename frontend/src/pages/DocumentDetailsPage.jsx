@@ -121,6 +121,11 @@ export default function DocumentDetailsPage() {
           title={documentsText.details.notFoundTitle}
           description={documentsText.details.notFoundDescription}
         />
+        <div className="page-actions">
+          <SecondaryButton type="button" onClick={() => navigate("/documents")}>
+            {documentsText.actions.backToDocuments}
+          </SecondaryButton>
+        </div>
       </>
     );
   }
@@ -160,7 +165,10 @@ export default function DocumentDetailsPage() {
 
       {actionError ? <ErrorMessage message={actionError} /> : null}
 
-      <section className="document-details__section">
+      <section className="document-details__section" aria-labelledby="document-general-title">
+        <h2 id="document-general-title" className="document-details__section-title">
+          {documentsText.details.generalSection}
+        </h2>
         <dl className="document-details__grid">
           <DetailField label={documentsText.fields.client} value={clientName} />
           <DetailField
@@ -171,6 +179,15 @@ export default function DocumentDetailsPage() {
             label={documentsText.fields.documentDate}
             value={<DateDisplay value={document.document_date} />}
           />
+          <DetailField label={documentsText.fields.notes} value={document.notes} />
+        </dl>
+      </section>
+
+      <section className="document-details__section" aria-labelledby="document-file-title">
+        <h2 id="document-file-title" className="document-details__section-title">
+          {documentsText.details.fileSection}
+        </h2>
+        <dl className="document-details__grid">
           <DetailField
             label={documentsText.fields.originalFilename}
             value={document.original_filename}
@@ -179,6 +196,14 @@ export default function DocumentDetailsPage() {
             label={documentsText.fields.fileSize}
             value={formatFileSize(document.file_size_bytes)}
           />
+        </dl>
+      </section>
+
+      <section className="document-details__section" aria-labelledby="document-financial-title">
+        <h2 id="document-financial-title" className="document-details__section-title">
+          {documentsText.details.financialSection}
+        </h2>
+        <dl className="document-details__grid document-details__grid--financial">
           <DetailField
             label={documentsText.fields.amountBeforeVat}
             value={<MoneyDisplay value={document.amount_before_vat} />}
@@ -195,7 +220,6 @@ export default function DocumentDetailsPage() {
             label={documentsText.fields.totalAmount}
             value={<MoneyDisplay value={document.total_amount} />}
           />
-          <DetailField label={documentsText.fields.notes} value={document.notes} />
         </dl>
       </section>
 
