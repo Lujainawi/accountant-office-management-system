@@ -72,7 +72,7 @@ export default function ClientDocumentsSection({ clientId }) {
                   {document.document_name}
                 </Link>
                 <span className="client-documents-list__date">
-                  <DateDisplay value={document.document_date} />
+                  <DateDisplay value={document.document_date} dateOnly />
                 </span>
               </div>
               <StatusBadge

@@ -177,7 +177,7 @@ export default function DocumentDetailsPage() {
           />
           <DetailField
             label={documentsText.fields.documentDate}
-            value={<DateDisplay value={document.document_date} />}
+            value={<DateDisplay value={document.document_date} dateOnly />}
           />
           <DetailField label={documentsText.fields.notes} value={document.notes} />
         </dl>

@@ -74,7 +74,7 @@ export default function ClientTasksSection({ clientId }) {
                   {task.title}
                 </Link>
                 <span className="client-tasks-list__date">
-                  {task.due_date ? <DateDisplay value={task.due_date} /> : ui.notAvailable}
+                  {task.due_date ? <DateDisplay value={task.due_date} dateOnly /> : ui.notAvailable}
                 </span>
               </div>
               <div className="client-tasks-list__badges">

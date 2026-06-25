@@ -258,7 +258,7 @@ export default function TasksPage() {
                     {clientNameById.get(task.client_id) ?? ui.notAvailable}
                   </td>
                   <td data-label={tasksText.list.columnDueDate}>
-                    {task.due_date ? <DateDisplay value={task.due_date} /> : ui.notAvailable}
+                    {task.due_date ? <DateDisplay value={task.due_date} dateOnly /> : ui.notAvailable}
                   </td>
                   <td data-label={tasksText.list.columnPriority}>
                     <StatusBadge

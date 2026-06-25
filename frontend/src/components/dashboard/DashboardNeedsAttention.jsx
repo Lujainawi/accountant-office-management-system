@@ -31,7 +31,7 @@ export default function DashboardNeedsAttention({ needsAttention }) {
                     {task.due_date ? (
                       <>
                         {" · "}
-                        <DateDisplay value={task.due_date} />
+                        <DateDisplay value={task.due_date} dateOnly />
                       </>
                     ) : null}
                   </span>
@@ -65,7 +65,7 @@ export default function DashboardNeedsAttention({ needsAttention }) {
                   <span className="dashboard-attention__meta">
                     {document.client_name}
                     {" · "}
-                    <DateDisplay value={document.document_date} />
+                    <DateDisplay value={document.document_date} dateOnly />
                   </span>
                 </Link>
                 <div className="dashboard-attention__badges">

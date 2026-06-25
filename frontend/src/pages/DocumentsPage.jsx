@@ -304,7 +304,7 @@ export default function DocumentsPage() {
                     {getDocumentTypeLabel(document.document_type)}
                   </td>
                   <td data-label={documentsText.list.columns.date}>
-                    <DateDisplay value={document.document_date} />
+                    <DateDisplay value={document.document_date} dateOnly />
                   </td>
                   <td data-label={documentsText.list.columns.total} className="documents-table__total">
                     <MoneyDisplay value={document.total_amount} />
