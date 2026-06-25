@@ -233,10 +233,22 @@
   margin-block-end: var(--space-5);
 }
 
+.clients-list-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-block-end: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
 .clients-toolbar {
   display: flex;
   justify-content: flex-start;
-  margin-block-end: var(--space-4);
+  margin-block-end: 0;
 }
 
 .clients-toolbar__add {
@@ -247,7 +259,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  margin-block-end: var(--space-5);
+  margin-block-end: 0;
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-border-subtle);
 }
 
 .search-input {
@@ -307,6 +321,11 @@
 .clients-table th {
   background: var(--color-neutral-bg);
   font-weight: 700;
+  font-size: var(--font-size-meta);
+}
+
+.clients-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .clients-table__link {
@@ -323,7 +342,29 @@
 .clients-table__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.clients-table__actions-group {
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.clients-table__delete {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: var(--color-surface);
+}
+
+.clients-table__delete:hover {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.clients-table__delete:focus-visible {
+  outline-color: var(--color-danger);
 }
 
 .client-form {
@@ -472,6 +513,21 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
   margin-block-end: var(--space-4);
+}
+
+.client-workspace-summary__status-block {
+  margin-block-end: var(--space-4);
+}
+
+.client-workspace-summary__status-block:last-child {
+  margin-block-end: 0;
+}
+
+.client-workspace-summary__status-heading {
+  font-size: var(--font-size-section-title);
+  font-weight: 700;
+  line-height: var(--line-height-heading);
+  margin-block-end: var(--space-3);
 }
 
 .client-workspace-summary__status-strip {
@@ -806,7 +862,17 @@
   }
 
   .clients-table__actions {
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .clients-table__actions-group {
+    width: 100%;
+  }
+
+  .clients-table__delete {
+    width: 100%;
   }
 
   .documents-table thead {

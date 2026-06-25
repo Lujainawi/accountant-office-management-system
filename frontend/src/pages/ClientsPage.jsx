@@ -123,32 +123,34 @@ export default function ClientsPage() {
     <>
       <PageHeader title={pages.clients.title} description={pages.clients.description} />
 
-      <div className="clients-toolbar">
-        <Link to="/clients/new" className="button button--primary clients-toolbar__add">
-          {clientsText.actions.addClient}
-        </Link>
-      </div>
+      <div className="clients-list-controls">
+        <div className="clients-toolbar">
+          <Link to="/clients/new" className="button button--primary clients-toolbar__add">
+            {clientsText.actions.addClient}
+          </Link>
+        </div>
 
-      <div className="clients-filters">
-        <SearchInput
-          id="client-search"
-          label={clientsText.list.searchLabel}
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder={clientsText.list.searchPlaceholder}
-        />
-        <FilterBar
-          statusLabel={clientsText.list.statusFilter}
-          statusValue={statusFilter}
-          onStatusChange={setStatusFilter}
-          statusOptions={ALL_STATUS_OPTIONS}
-          typeLabel={clientsText.list.typeFilter}
-          typeValue={typeFilter}
-          onTypeChange={setTypeFilter}
-          typeOptions={ALL_TYPE_OPTIONS}
-          resetLabel={ui.resetFilters}
-          onReset={handleResetFilters}
-        />
+        <div className="clients-filters">
+          <SearchInput
+            id="client-search"
+            label={clientsText.list.searchLabel}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder={clientsText.list.searchPlaceholder}
+          />
+          <FilterBar
+            statusLabel={clientsText.list.statusFilter}
+            statusValue={statusFilter}
+            onStatusChange={setStatusFilter}
+            statusOptions={ALL_STATUS_OPTIONS}
+            typeLabel={clientsText.list.typeFilter}
+            typeValue={typeFilter}
+            onTypeChange={setTypeFilter}
+            typeOptions={ALL_TYPE_OPTIONS}
+            resetLabel={ui.resetFilters}
+            onReset={handleResetFilters}
+          />
+        </div>
       </div>
 
       {actionError ? <ErrorMessage message={actionError} /> : null}
@@ -207,18 +209,27 @@ export default function ClientsPage() {
                   </td>
                   <td data-label={clientsText.list.columns.actions}>
                     <div className="clients-table__actions">
-                      <Link to={`/clients/${client.id}`} className="button button--secondary">
-                        {ui.view}
-                      </Link>
-                      <Link to={`/clients/${client.id}/edit`} className="button button--secondary">
-                        {ui.edit}
-                      </Link>
-                      {client.status === "active" ? (
-                        <SecondaryButton type="button" onClick={() => setPendingArchiveClient(client)}>
-                          {clientsText.actions.archiveClient}
-                        </SecondaryButton>
-                      ) : null}
-                      <SecondaryButton type="button" onClick={() => setPendingDeleteClient(client)}>
+                      <div className="clients-table__actions-group">
+                        <Link to={`/clients/${client.id}`} className="button button--secondary">
+                          {ui.view}
+                        </Link>
+                        <Link to={`/clients/${client.id}/edit`} className="button button--secondary">
+                          {ui.edit}
+                        </Link>
+                        {client.status === "active" ? (
+                          <SecondaryButton
+                            type="button"
+                            onClick={() => setPendingArchiveClient(client)}
+                          >
+                            {clientsText.actions.archiveClient}
+                          </SecondaryButton>
+                        ) : null}
+                      </div>
+                      <SecondaryButton
+                        type="button"
+                        className="clients-table__delete"
+                        onClick={() => setPendingDeleteClient(client)}
+                      >
                         {clientsText.actions.deleteClient}
                       </SecondaryButton>
                     </div>

@@ -18,10 +18,7 @@ import ClientNotesPanel from "../components/clients/ClientNotesPanel";
 import { deleteClient, getClient, getClientSummary, updateClient } from "../api/clients";
 import { ApiError } from "../api/client";
 import { clients as clientsText, pages, ui } from "../content/he";
-import {
-  getClientStatusLabel,
-  getClientTypeLabel,
-} from "../utils/clientForm";
+import { getClientTypeLabel } from "../utils/clientForm";
 import { getClientErrorMessage } from "../utils/clientErrors";
 
 function DetailField({ label, value }) {
@@ -213,10 +210,6 @@ export default function ClientDetailsPage() {
               <DetailField
                 label={clientsText.fields.clientType}
                 value={getClientTypeLabel(client.client_type)}
-              />
-              <DetailField
-                label={clientsText.fields.status}
-                value={getClientStatusLabel(client.status)}
               />
               <DetailField label={clientsText.fields.phone} value={client.phone} />
               <DetailField label={clientsText.fields.email} value={client.email} />
