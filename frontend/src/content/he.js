@@ -122,6 +122,7 @@ export const ui = {
   emptyStateTitle: "בקרוב",
   openMenu: "פתיחת תפריט",
   closeMenu: "סגירת תפריט",
+  hideMenu: "הסתרת תפריט",
   mainNavigation: "ניווט ראשי",
   loading: "טוען...",
   error: "אירעה שגיאה",

@@ -2,20 +2,26 @@ import { NavLink } from "react-router";
 import { appTitle, navItems, ui } from "../../content/he";
 import logoImage from "../../assets/brand/talal-awidat-logo.png";
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({
+  isMobileMenuOpen,
+  isDesktopSidebarVisible,
+  onMobileClose,
+}) {
   return (
     <>
-      {isOpen && (
+      {isMobileMenuOpen && (
         <button
           type="button"
           className="sidebar__backdrop"
           aria-label={ui.closeMenu}
-          onClick={onClose}
+          onClick={onMobileClose}
         />
       )}
       <aside
         id="app-sidebar"
-        className={`sidebar ${isOpen ? "sidebar--open" : ""}`}
+        className={`sidebar${isMobileMenuOpen ? " sidebar--open" : ""}${
+          !isDesktopSidebarVisible ? " sidebar--desktop-hidden" : ""
+        }`}
         aria-label={ui.mainNavigation}
       >
         <div className="sidebar__brand">
@@ -37,7 +43,7 @@ export default function Sidebar({ isOpen, onClose }) {
               className={({ isActive }) =>
                 `sidebar__link${isActive ? " sidebar__link--active" : ""}`
               }
-              onClick={onClose}
+              onClick={onMobileClose}
             >
               {item.label}
             </NavLink>
@@ -48,17 +54,34 @@ export default function Sidebar({ isOpen, onClose }) {
   );
 }
 
-export function SidebarToggle({ isOpen, onToggle }) {
+export function SidebarToggle({
+  isMobileViewport,
+  isMobileMenuOpen,
+  isDesktopSidebarVisible,
+  onToggle,
+}) {
+  const isExpanded = isMobileViewport
+    ? isMobileMenuOpen
+    : isDesktopSidebarVisible;
+
+  const label = isMobileViewport
+    ? isMobileMenuOpen
+      ? ui.closeMenu
+      : ui.openMenu
+    : isDesktopSidebarVisible
+      ? ui.hideMenu
+      : ui.openMenu;
+
   return (
     <button
       type="button"
       className="sidebar__toggle"
-      aria-expanded={isOpen}
+      aria-expanded={isExpanded}
       aria-controls="app-sidebar"
-      aria-label={isOpen ? ui.closeMenu : ui.openMenu}
+      aria-label={label}
       onClick={onToggle}
     >
-      {isOpen ? ui.closeMenu : ui.openMenu}
+      {label}
     </button>
   );
 }
