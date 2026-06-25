@@ -1,269 +1,219 @@
-\
 # Accountant Office Management System
 
-> **Internal MVP for an accountant office** — a full-stack system for organizing clients, documents, tasks, payments, VAT calculations, and monthly internal summaries.
+A full-stack internal office-management application for an accountant practice. It helps authorized office staff organize clients, documents, tasks, manual payment records, VAT calculations, and monthly internal summaries in one place. The project is built as a portfolio-quality local MVP demonstrating full-stack development, database design, authentication, secure document handling, validation, and automated backend testing.
 
-## Project Overview
+**Important boundaries:** This is a **local-development internal MVP**. It is **not deployed to production**, is **not legal or accounting advice software**, and must not be presented as an official tax report or production-ready system for real sensitive client data. The application UI is **Hebrew-first and right-to-left (RTL)**; labels and content appear in Hebrew while this README is in English for reviewers and recruiters.
 
-This project is an **internal office-management system**, not a public marketing website and not a client portal.
+## Features
 
-Only the accountant and authorized office staff use the system. In the MVP, clients do not create accounts, log in, upload documents, or make payments through the application. Client documents arrive through external channels such as email, WhatsApp, or physical delivery; an authorized office user then manages them in the system.
+### Implemented capabilities
 
-The project is intentionally built as a realistic, understandable portfolio application using Cursor as an AI-assisted development tool. It demonstrates full-stack development, database design, authentication, document-management workflow, dashboard/reporting logic, validation, testing, and careful AI-assisted development.
+- Staff authentication (login, logout, session check) with protected API routes and frontend pages
+- Dashboard with live SQLite-backed metrics and attention items
+- Client management: list, search, filter, create, edit, view, and controlled delete/archive
+- Client details workspace with related documents, tasks, payments, notes, and financial summary
+- Document management: upload, metadata edit, search, filters, status tracking, and authenticated download
+- VAT calculator and automatic VAT calculations in document forms (server-validated)
+- Internal task tracking with priorities, due dates, and client/document links
+- Manual payment-status tracking (no payment processing)
+- Monthly internal office summaries (explicitly not a legal tax report)
+- Office settings (VAT rate, currency, allowed file types, office identity)
+- Responsive layout with desktop sidebar and mobile drawer navigation
 
-## Core Goals
+### Mock / planned capabilities
 
-The system should help an accountant:
+These pages and API routes exist for roadmap visibility only. They do **not** connect to real external services:
 
-- Keep client records in one organized place.
-- Store and find document metadata and approved demo files.
-- Track the stage of each document and missing information.
-- Track internal tasks, deadlines, and priorities.
-- Calculate VAT and document totals correctly.
-- See a concise dashboard and monthly internal summaries.
-- Record payment status manually without processing real payments.
-- Keep future integrations visible as clearly labeled mock or planned modules.
+- Email preview (mock — no sending)
+- OCR invoice reader (coming soon / mock sample output)
+- Tax authority integration (planned)
+- Digital signature (planned)
+- Online payments (mock — manual status concept only)
+- AI assistant (planned / mock suggestions)
 
-## Scope and Important Boundaries
-
-### Included in the MVP
-
-1. Accountant/staff authentication.
-2. Dashboard with data from SQLite.
-3. Client management and a client-details page.
-4. Document metadata, controlled demo-file upload, download, search, and filters.
-5. VAT calculator and automatic VAT calculations in document forms.
-6. Internal task tracking.
-7. Manual payment-status tracking.
-8. Monthly internal summaries.
-9. Office settings.
-10. Clearly labeled future/mock module pages.
-
-### Explicitly excluded from the MVP
-
-- Public marketing website.
-- Client registration, login, portal, messaging, or self-service upload.
-- Real email sending, OCR, payment processing, tax-authority submission, digital signatures, or AI processing.
-- Real client documents, real secrets, credit-card data, or production deployment claims.
-- Docker, Kubernetes, Redis, Celery, microservices, and complex permissions unless explicitly approved later.
-
-> **Important:** This is a portfolio/MVP system. It must not be presented as legal accounting software, an official tax report, or a production-ready system for real sensitive client data without further security, privacy, operational, and legal work.
-
-## Technology Stack
+## Technology stack
 
 | Area | Choice |
 |---|---|
-| Frontend | React + Vite + React Router |
-| Styling | Simple modular CSS / CSS variables; no heavy UI library in the MVP |
-| Backend | Python + FastAPI |
-| Database | SQLite for the local MVP |
-| ORM | SQLAlchemy |
-| Validation | Pydantic schemas and frontend form validation |
-| Authentication | Password hashing + token-based session in secure cookies for deployed environments |
-| File storage | Private local `backend/uploads/` folder for demo files only |
-| Tests | Pytest for backend plus manual test checklist |
+| Frontend | React 19, Vite 6, React Router 7 |
+| Styling | Modular CSS with CSS variables (no heavy UI library) |
+| Backend | Python, FastAPI, Pydantic, Uvicorn |
+| Database | SQLite with SQLAlchemy ORM |
+| Authentication | Argon2 password hashing, JWT in HttpOnly cookies |
+| File storage | Private local `backend/uploads/` (demo files only) |
+| Testing | Pytest (backend); manual frontend verification checklist |
 
-SQLite is intentionally used for the local MVP. The application should use SQLAlchemy and environment-based configuration so the database can be migrated to PostgreSQL later without rewriting the business logic.
+## Architecture
 
-## Main Screens
+The system is a classic local full-stack web application: a React SPA talks to a FastAPI REST API, which persists data in SQLite and stores uploaded files in a private backend folder. Mock integration modules reuse the same API pattern but return sample or status-only responses without external network calls.
 
-1. Login
-2. Dashboard
-3. Clients
-4. Add/Edit Client
-5. Client Details
-6. Documents
-7. Upload/Edit Document
-8. VAT Calculator
-9. Tasks
-10. Monthly Reports
-11. Settings
-12. Future Modules
-13. Email Preview — Mock Mode
-14. OCR Invoice Reader — Coming Soon
-15. Tax Authority Integration — Planned
-16. Digital Signature — Planned
-17. Online Payments — Mock Mode
-18. AI Assistant — Planned
+See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for a concise overview, authentication flow, and data-flow diagram.
 
-## Design Direction
-
-The application should look like a calm, modern, trustworthy office tool:
-
-- Hebrew-first, right-to-left (RTL) interface for the MVP.
-- Layout prepared for future Arabic/English translation without implementing a language selector yet.
-- Clean sidebar, clear page titles, readable tables, and visible status badges.
-- Professional, accessible forms with explicit labels and understandable errors.
-- Responsive layout for laptop, tablet, and basic mobile use.
-- No public pages that expose document data or client information.
-
-See [`UI_UX_GUIDELINES.md`](./UI_UX_GUIDELINES.md) for the detailed design rules.
-
-## Project Documentation
-
-| File | Purpose |
-|---|---|
-| `PROJECT_REQUIREMENTS.md` | Product scope, mandatory behavior, entities, routes, and definition of done. |
-| `DEVELOPMENT_PLAN.md` | Controlled phase-by-phase implementation sequence. |
-| `DATABASE_SCHEMA.md` | Data model, field rules, relationships, indexes, and financial-data decisions. |
-| `UI_UX_GUIDELINES.md` | RTL layout, visual style, accessibility, responsive behavior, and screen guidance. |
-| `SECURITY_PRIVACY.md` | Authentication, file-upload, privacy, secrets, and deployment safety requirements. |
-| `CURSOR_START_PROMPT.md` | First prompt to use in Cursor. |
-| `AI_WORKFLOW.md` | How AI-assisted development is reviewed and controlled. |
-| `MANUAL_TEST_CHECKLIST.md` | Manual quality, safety, and regression checks. |
-| `DEMO_DATA.md` | Safe fictitious data for screenshots, demos, and tests. |
-
-## Suggested Folder Structure
-
-```text
-accountant-office-management-system/
-├── README.md
-├── PROJECT_REQUIREMENTS.md
-├── DEVELOPMENT_PLAN.md
-├── DATABASE_SCHEMA.md
-├── UI_UX_GUIDELINES.md
-├── SECURITY_PRIVACY.md
-├── CURSOR_START_PROMPT.md
-├── AI_WORKFLOW.md
-├── MANUAL_TEST_CHECKLIST.md
-├── DEMO_DATA.md
-├── .gitignore
-├── .env.example
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── config.py
-│   │   ├── database.py
-│   │   ├── dependencies.py
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── crud/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── utils/
-│   │   └── uploads/
-│   │       └── .gitkeep
-│   ├── tests/
-│   └── requirements.txt
-└── frontend/
-    ├── src/
-    │   ├── api/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── styles/
-    │   ├── utils/
-    │   └── main.jsx
-    └── package.json
-```
-
-## Local Setup (after the code is generated)
+## Local setup (Windows / PowerShell)
 
 ### Prerequisites
 
-- Python 3.12 or newer
+- Python 3.10 (the project was verified with Python 3.10; the Windows setup below uses `py -3.10`)
 - Node.js 20 or newer
 - npm
 - Git
 
-### Backend
+### 1. Environment file
 
-```bash
-cd backend
-python -m venv .venv
-```
-
-**Windows PowerShell:**
+From the repository root, create a local `.env` from the example:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+Copy-Item .env.example .env
 ```
 
-**Linux / WSL / macOS:**
+Edit `.env` and set at minimum:
 
-```bash
-source .venv/bin/activate
-```
+| Variable | Purpose |
+|---|---|
+| `SECRET_KEY` | Required. Replace the placeholder with a long random value. The app rejects the example placeholder at startup. |
+| `DEV_ADMIN_PASSWORD` | Required for first login. Replace the placeholder with a local dev password. Used only when the users table is empty. |
+| `DEV_ADMIN_EMAIL` | Default `admin@example.test`. Email for the seeded development admin user. |
+| `DATABASE_URL` | Default `sqlite:///./accountant_app.db` (SQLite file created under `backend/` when the server starts). |
+| `FRONTEND_ORIGIN` | Default `http://127.0.0.1:5173`. Must match the Vite dev server origin for CORS. |
+| `COOKIE_SECURE` | Default `false` for local HTTP development. Set `true` only with HTTPS in a deployed environment. |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Default `60`. |
+| `MAX_UPLOAD_SIZE_MB` | Default `10`. |
 
-```bash
-pip install -r requirements.txt
-copy .env.example .env          # Windows Command Prompt
-# or: cp .env.example .env      # Linux / WSL / macOS
+Integration keys in `.env.example` (`EMAIL_API_KEY`, `OCR_API_KEY`, etc.) are placeholders only. No real integrations are enabled.
+
+Never commit `.env`, database files, or uploaded files.
+
+### 2. Backend
+
+```powershell
+cd backend
+py -3.10 -m venv .venv312
+.\.venv312\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Expected development health route:
+The API reads configuration from the `.env` file at the **repository root**. On first startup, the backend creates SQLite tables and seeds default office settings, integration statuses, and a development admin user (if the users table is empty and `DEV_ADMIN_PASSWORD` is set).
+
+Health check:
 
 ```text
 GET http://127.0.0.1:8000/api/health
 ```
 
-### Frontend
+### 3. Frontend
 
-```bash
+In a second terminal:
+
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Use the URL printed by Vite, usually:
+Open the URL printed by Vite (typically `http://localhost:5173` or `http://127.0.0.1:5173`). Ensure `FRONTEND_ORIGIN` in `.env` matches the origin you use.
+
+### 4. First login
+
+After both servers are running, sign in with:
+
+- **Email:** value of `DEV_ADMIN_EMAIL` (default `admin@example.test`)
+- **Password:** the `DEV_ADMIN_PASSWORD` you set in `.env`
+
+The admin user is created automatically on first backend startup when no users exist. If login fails, confirm `SECRET_KEY` and `DEV_ADMIN_PASSWORD` are not still placeholder values.
+
+For fictitious demo records suitable for local demos, see [`DEMO_DATA.md`](./DEMO_DATA.md).
+
+## Testing
+
+### Backend (automated)
+
+With the backend virtual environment activated:
+
+```powershell
+cd backend
+python -m pytest
+```
+
+The backend includes automated tests for health, authentication, CRUD workflows, document upload security, VAT logic, dashboard, reports, integrations (mock), and error handling. A final pass/fail result and any updated test summary will be recorded after the final verification regression batch; this README does not state a final test count.
+
+### Frontend (manual)
+
+Core frontend flows are verified manually using [`MANUAL_TEST_CHECKLIST.md`](./MANUAL_TEST_CHECKLIST.md). Full frontend regression coverage is not claimed in this MVP.
+
+Before publishing or sharing the repository, complete [`PORTFOLIO_CHECKLIST.md`](./PORTFOLIO_CHECKLIST.md).
+
+## Security and privacy
+
+- Passwords are stored as Argon2 hashes; plain-text passwords are never returned by the API
+- JWT access tokens are stored in **HttpOnly** cookies (`SameSite=Lax`; `Secure` controlled by `COOKIE_SECURE`)
+- Internal API routes and frontend pages require authentication
+- Uploaded files are stored in a private backend folder, not as public static assets
+- File download requires authentication and resolves paths from the database — not from user-supplied paths
+- Allowed upload types and size limits are enforced server-side
+- `.env`, SQLite databases, and `backend/uploads/` contents must not be committed
+
+See [`SECURITY_PRIVACY.md`](./SECURITY_PRIVACY.md) for full requirements.
+
+## Key engineering decisions
+
+- **HttpOnly cookie sessions** — JWT tokens are not stored in `localStorage`; the frontend sends credentialed requests and the backend sets HttpOnly cookies on login.
+- **Server-side money handling** — Financial amounts use `Decimal` / SQLAlchemy `Numeric`; VAT totals are recalculated on the backend, not trusted from the client alone.
+- **Per-document VAT rate** — Each document stores its own VAT rate at creation time; changing the office default affects new documents only.
+- **Private file storage** — Uploads receive server-generated storage names; original filenames are display metadata only; downloads go through an authenticated API route.
+- **Layered backend structure** — Routes, Pydantic schemas, CRUD, services, and utilities are separated for readability and testability.
+- **Hebrew RTL by design** — UI text is centralized in `frontend/src/content/he.js` with `dir="rtl"` and `lang="he"` at the application root.
+- **Honest mock integrations** — Future modules are visibly labeled and backed by mock or status-only endpoints with no real external API calls.
+
+## Limitations and scope boundaries
+
+- **Local MVP only** — intended for development and portfolio review on a developer machine; not production-deployed
+- **No client portal** — clients do not register, log in, or self-service upload in this MVP
+- **Mock/planned integrations only** — no real OCR, email sending, tax-authority, payment-provider, or AI document processing
+- **SQLite with `create_all`** — no Alembic migrations or PostgreSQL configuration in the current MVP
+- **Simple role model** — `admin` / `staff` field exists; fine-grained permissions are not implemented
+- **Manual payment tracking** — records status internally; does not process cards or online payments
+- **Partial manual frontend verification** — automated coverage is backend-focused; see the manual checklist for UI regression scope
+
+## Repository structure
 
 ```text
-http://localhost:5173
+accountant-office-management/
+├── README.md
+├── PORTFOLIO_CHECKLIST.md
+├── docs/
+│   └── ARCHITECTURE.md
+├── .env.example
+├── backend/
+│   ├── app/          # FastAPI application (models, routes, services, utils)
+│   ├── uploads/      # Private local file storage (gitignored except .gitkeep)
+│   ├── tests/        # Pytest suite
+│   └── requirements.txt
+└── frontend/
+    ├── src/          # React pages, components, API client, Hebrew content
+    └── package.json
 ```
 
-## Environment Variables
+## Screenshots
 
-Create `.env` locally from `.env.example`. Never commit the real `.env` file.
+Portfolio screenshots will be added in a later documentation batch. They will use only fictitious data from [`DEMO_DATA.md`](./DEMO_DATA.md), portfolio-safe generic branding, and will not include credentials, secrets, real client information, or unapproved office branding.
 
-```env
-DATABASE_URL=sqlite:///./accountant_app.db
-SECRET_KEY=replace_with_a_long_random_value_for_local_development
-ACCESS_TOKEN_EXPIRE_MINUTES=60
-FRONTEND_ORIGIN=http://localhost:5173
-MAX_UPLOAD_SIZE_MB=10
+## Documentation
 
-# Placeholder values only; no real integration is enabled in the MVP.
-EMAIL_API_KEY=not_configured
-OCR_API_KEY=not_configured
-PAYMENT_API_KEY=not_configured
-SIGNATURE_API_KEY=not_configured
-TAX_AUTHORITY_API_KEY=not_configured
-AI_API_KEY=not_configured
-```
+| Document | Purpose |
+|---|---|
+| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | System overview, auth flow, and data-flow diagram |
+| [`PORTFOLIO_CHECKLIST.md`](./PORTFOLIO_CHECKLIST.md) | Pre-publication verification checklist |
+| [`PROJECT_REQUIREMENTS.md`](./PROJECT_REQUIREMENTS.md) | Product scope, entities, routes, definition of done |
+| [`DATABASE_SCHEMA.md`](./DATABASE_SCHEMA.md) | Data model, relationships, financial field rules |
+| [`SECURITY_PRIVACY.md`](./SECURITY_PRIVACY.md) | Authentication, upload safety, secrets, privacy |
+| [`UI_UX_GUIDELINES.md`](./UI_UX_GUIDELINES.md) | RTL layout, visual style, responsive behavior |
+| [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) | Phase-by-phase implementation history |
+| [`MANUAL_TEST_CHECKLIST.md`](./MANUAL_TEST_CHECKLIST.md) | Manual quality and regression checks |
+| [`DEMO_DATA.md`](./DEMO_DATA.md) | Safe fictitious data for demos and screenshots |
+| [`AI_WORKFLOW.md`](./AI_WORKFLOW.md) | Controlled AI-assisted development process |
+| [`CURSOR_START_PROMPT.md`](./CURSOR_START_PROMPT.md) | Initial controlled prompt for starting the project in Cursor |
 
-## Security and Demo-Data Rules
+## Development process
 
-- Never commit `.env`, database files, uploaded files, tokens, secrets, or real client data.
-- Store passwords only as strong password hashes.
-- Use fictitious data only for screenshots, demos, and GitHub.
-- Keep uploaded files private; serve them through an authenticated download endpoint.
-- Do not send client documents to external services in the MVP.
-- Do not store credit-card information and do not process payments.
-
-See [`SECURITY_PRIVACY.md`](./SECURITY_PRIVACY.md) for mandatory implementation rules.
-
-## Development Workflow
-
-1. Open the project in Cursor.
-2. Add all project documentation files before requesting code.
-3. Paste the first prompt from `CURSOR_START_PROMPT.md`.
-4. Review Cursor's project summary and plan.
-5. Approve one phase only.
-6. Run and manually test that phase.
-7. Review unfamiliar code and ask Cursor to explain it.
-8. Commit the working phase with a clear Git message.
-9. Continue only after the current phase works.
-
-## Demo and Portfolio Notes
-
-For a strong GitHub/CV presentation, include:
-
-- A concise project description and technology stack.
-- Screenshots using only the fictitious sample data in `DEMO_DATA.md`.
-- A short demo video or GIF later, if possible.
-- Clear mention that the system is an internal MVP and integrations are mock/planned.
-- A short section explaining the controlled Cursor workflow.
-
-## Future Direction
-
-After the MVP is stable, possible future work includes a separate public marketing website, client portal, PostgreSQL deployment, real email/OCR integrations, official tax integration, digital signatures, online payments, stronger role management, audit logs, backups, and multilingual UI.
+This project was built in controlled phases with review and testing at each step. AI-assisted development was used as a coding assistant under explicit scope approval; see [`AI_WORKFLOW.md`](./AI_WORKFLOW.md) for the full workflow.

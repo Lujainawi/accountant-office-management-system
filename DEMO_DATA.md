@@ -64,6 +64,17 @@ Create harmless placeholder files (for example, a small text/PDF/image generated
 | דנה כהן | קבלה דוגמה — מאי 2026 | 590.00 | pending | — |
 | אורן ברק | דוח דוגמה — אפריל 2026 | 1,000.00 | partially_paid | 2026-05-12 |
 
+## Portfolio Screenshot Preparation
+
+When preparing the repository for portfolio screenshots (added in a separate documentation batch):
+
+- Use **only** the fictitious names, contacts, business IDs, amounts, and document titles defined in this file.
+- Use a **separate, local, fictitious SQLite database** dedicated to portfolio screenshots. During screenshot preparation, set local `DATABASE_URL` in your `.env` to point at this demo database (for example, a distinct filename such as `portfolio_demo.db` under `backend/`). Restart the backend, then enter demo records manually through the UI. This local setting must **never** be committed.
+- Do **not** include real customer data, phone numbers, emails, business identifiers, uploaded files, credentials, or `.env` values in screenshots.
+- Populate enough sample **clients, documents, tasks, and payments** so the dashboard, client-details, and documents pages show meaningful non-empty states (the tables in this document are the intended source).
+- Update office settings to the demo office name and accountant name above if you want screenshots to match this guide.
+- Use **portfolio-safe generic branding** in public screenshots. Do not show unapproved office names or logos in GitHub or portfolio images.
+
 ## Screenshot Checklist
 
 Before publishing a screenshot or recording:
